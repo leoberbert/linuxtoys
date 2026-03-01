@@ -341,5 +341,8 @@
   "cancel_label": "Batal",
   "haguichi_desc": "Memudahkan penggunaan Hamachi di Linux dengan antara muka grafik intuitif yang merangkumi semua cirinya.",
   "firefoxsnap_desc": "Mengalih keluar Firefox Snap daripada sistem Ubuntu dan memasang versi Mozilla PPA rasmi sambil memastikan ia akan menjejaki kemas kini daripada repositori tersebut pada masa hadapan.",
-  "stoat_desc": "Klien sembang percuma dan sumber terbuka, alternatif kepada Discord."
+  "stoat_desc": "Klien sembang percuma dan sumber terbuka, alternatif kepada Discord.",
+  "needed_requirements_title": "Keperluan",
+  "needed_requirements_message": "Ciri-ciri berikut diperlukan sebelum melanjutkan dengan {script_name}:",
+  "needed_requirements_footer": "Fitur-fitur yang diperlukan ini akan dipasang terlebih dahulu, kemudian skrip utama akan dilanjutkan."
 }

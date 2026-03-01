@@ -341,5 +341,8 @@
   "cancel_label": "İptal",
   "haguichi_desc": "Linux'ta Hamachi kullanımını tüm özelliklerini kapsayan sezgisel bir grafik arayüzle kolaylaştırır.",
   "firefoxsnap_desc": "Firefox Snap'ı Ubuntu sistemlerinden kaldırır ve gelecekte bu depodan gelen güncellemeleri takip etmesini sağlayarak resmi Mozilla PPA sürümünü yükler.",
-  "stoat_desc": "Ücretsiz ve açık kaynaklı sohbet istemcisi, Discord'a alternatif."
+  "stoat_desc": "Ücretsiz ve açık kaynaklı sohbet istemcisi, Discord'a alternatif.",
+  "needed_requirements_title": "Gereksinimler",
+  "needed_requirements_message": "{script_name} ile devam etmeden önce aşağıdaki özellikler gereklidir:",
+  "needed_requirements_footer": "Bu gerekli özellikler önce yüklenecek, sonra ana betiği devam edecektir."
 }

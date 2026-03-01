@@ -341,5 +341,8 @@
   "cancel_label": "Otkaži",
   "haguichi_desc": "Olakšava korištenje Hamachi-ja na Linuxu s intuitivnim grafičkim sučeljem koje pokriva sve njegove značajke.",
   "firefoxsnap_desc": "Uklanja Firefox Snap s Ubuntu sustava i instalira službenu Mozilla PPA verziju, osiguravajući da će u budućnosti pratiti ažuriranja iz tog repozitorija.",
-  "stoat_desc": "Besplatan i open-source klijent za chat, alternativa za Discord."
+  "stoat_desc": "Besplatan i open-source klijent za chat, alternativa za Discord.",
+  "needed_requirements_title": "Zahtjevi",
+  "needed_requirements_message": "Sljedeće osobine su potrebne prije nego što nastavite s {script_name}:",
+  "needed_requirements_footer": "Ove obavezne osobine će biti instalirane prvo, a zatim će se glavni skript nastaviti."
 }

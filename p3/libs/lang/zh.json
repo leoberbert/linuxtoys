@@ -343,5 +343,8 @@
   "cancel_label": "取消",
   "haguichi_desc": "通过直观的图形界面简化在 Linux 上使用 Hamachi，涵盖其所有功能。",
   "firefoxsnap_desc": "从 Ubuntu 系统中删除 Firefox Snap 并安装官方 Mozilla PPA 版本，同时确保将来能从该存储库跟踪更新。",
-  "stoat_desc": "免费开源的聊天客户端，Discord 的替代品。"
+  "stoat_desc": "免费开源的聊天客户端，Discord 的替代品。",
+  "needed_requirements_title": "要求",
+  "needed_requirements_message": "继续使用 {script_name} 之前需要以下功能:",
+  "needed_requirements_footer": "这些必需的功能将首先安装，然后主脚本将继续进行。"
 }

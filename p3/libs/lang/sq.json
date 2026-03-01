@@ -341,5 +341,8 @@
   "cancel_label": "Anulo",
   "haguichi_desc": "Lehtëson përdorimin e Hamachi në Linux me një ndërfaqe grafike intuitive që mbulon të gjitha veçoritë e tij.",
   "firefoxsnap_desc": "Heq Firefox Snap nga sistemet Ubuntu dhe instalon versionin zyrtar të Mozilla PPA duke siguruar që do të gjurmojë përditësimet nga ajo depo në të ardhmen.",
-  "stoat_desc": "Klient bisede falas me burim të hapur, alternativë ndaj Discord."
+  "stoat_desc": "Klient bisede falas me burim të hapur, alternativë ndaj Discord.",
+  "needed_requirements_title": "Kërkesa",
+  "needed_requirements_message": "Veçoritë e mëposhtme janë të nevojshme para se të vazhdohet me {script_name}:",
+  "needed_requirements_footer": "Këto veçori të nevojshme do të instalohen fillimisht, pastaj skripti kryesor do të vazhdojë."
 }

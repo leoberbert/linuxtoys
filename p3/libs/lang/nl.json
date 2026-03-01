@@ -341,5 +341,8 @@
   "cancel_label": "Annuleren",
   "haguichi_desc": "Vergemakkelijkt het gebruik van Hamachi op Linux met een intuïtieve grafische interface die alle functies dekt.",
   "firefoxsnap_desc": "Verwijdert Firefox Snap van Ubuntu-systemen und installeert de officiële Mozilla PPA-versie, terwijl er wordt voor gezorgd dat updates uit die repository in de toekomst worden gevolgd.",
-  "stoat_desc": "Gratis en open-source chatclient, alternatief voor Discord."
+  "stoat_desc": "Gratis en open-source chatclient, alternatief voor Discord.",
+  "needed_requirements_title": "Vereisten",
+  "needed_requirements_message": "De volgende functies zijn vereist voordat u doorgaat met {script_name}:",
+  "needed_requirements_footer": "Deze vereiste functies worden eerst geïnstalleerd, waarna het hoofdscript wordt voortgezet."
 }

@@ -341,5 +341,8 @@
   "cancel_label": "إلغاء",
   "haguichi_desc": "يسهل استخدام Hamachi على Linux بواجهة رسومية بديهية تغطي جميع ميزاته.",
   "firefoxsnap_desc": "يزيل Firefox Snap من أنظمة Ubuntu ويثبت إصدار Mozilla PPA الرسمي مع ضمان تتبع التحديثات من ذلك المستودع في المستقبل.",
-  "stoat_desc": "عميل دردشة مجاني ومفتوح المصدر، بديل لـ Discord."
+  "stoat_desc": "عميل دردشة مجاني ومفتوح المصدر، بديل لـ Discord.",
+  "needed_requirements_title": "المتطلبات",
+  "needed_requirements_message": "المميزات التالية مطلوبة قبل المتابعة مع {script_name}:",
+  "needed_requirements_footer": "سيتم تثبيت هذه الميزات المطلوبة أولاً، ثم سيستمر البرنامج الرئيسي."
 }

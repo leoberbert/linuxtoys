@@ -341,5 +341,8 @@
   "cancel_label": "Cealaigh",
   "haguichi_desc": "Éascaíonn sé úsáid Hamachi ar Linux le comhéadan grafach iomasach a chlúdaíonn a ghnéithe go léir.",
   "firefoxsnap_desc": "Baineann Firefox Snap de chórais Ubuntu agus suiteálann sé an leagan oifigiúil Mozilla PPA agus cinntíonn sé go leanfaidh sé nuashonruithe ón taispeannach sin amach anseo.",
-  "stoat_desc": "Cliant comhrá saor in aisce agus foinse oscailte, rogha eile seachas Discord."
+  "stoat_desc": "Cliant comhrá saor in aisce agus foinse oscailte, rogha eile seachas Discord.",
+  "needed_requirements_title": "Riachtanais",
+  "needed_requirements_message": "Tá gá do na gné agus a leanas roimh bhraistint ar aghaidh le {script_name}:",
+  "needed_requirements_footer": "Suiteofar na gné riachtanacha seo ar dtús, ansin leanfaidh an príomhscript ar aghaidh."
 }

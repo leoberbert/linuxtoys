@@ -341,5 +341,8 @@
   "cancel_label": "ያስቁሙ",
   "haguichi_desc": "በሊኑክስ ላይ ሃማቺን በቀላሉ ለመጠቀም የሚያስችል ሁሉንም ባህሪያቱን የሚሸፍን ቀላል የግራፊክስ በይነገጽ።",
   "firefoxsnap_desc": "ፊርፎክስ ስናፕን ከኡቡንቱ ሲስተሞች ላይ በማንሳት ይፋዊውን የሞዚላ PPA ስሪት ይጭናል እንዲሁም ወደፊት ከዛ ማከማቻ ዝመናዎችን መከታተሉን ያረጋግጣል።",
-  "stoat_desc": "ነጻ እና ክፍት ምንጭ የውይይት ደንበኛ፣ ለDiscord አማራጭ።"
+  "stoat_desc": "ነጻ እና ክፍት ምንጭ የውይይት ደንበኛ፣ ለDiscord አማራጭ።",
+  "needed_requirements_title": "መስፈርቶች",
+  "needed_requirements_message": "ከ{script_name} ጋር ወደ ፊት ከመስፈር በፊት የሚከተሉት ባህሪዎች ያስፈልጋሉ:",
+  "needed_requirements_footer": "እነዚህ አስፈላጊ ባህሪዎች መጀመሪያ ይገጠሙታል፣ ከዚያ ዋናው ስክሪፕት ይቀጥላል።"
 }

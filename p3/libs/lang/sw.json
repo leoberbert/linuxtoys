@@ -339,5 +339,8 @@
   "cancel_label": "Ghairi",
   "haguichi_desc": "Hurahisisha matumizi ya Hamachi kwenye Linux na kiolesura cha picha cha ufahamu kinachofunika vipengele vyake vyote.",
   "firefoxsnap_desc": "Huondoa Firefox Snap kwenye mifumo ya Ubuntu na kusakinisha toleo rasmi la Mozilla PPA huku akihakikisha kuwa itafuatilia masasisho kutoka kwa hazina hiyo katika siku zijazo.",
-  "stoat_desc": "Kiteja cha mazungumzo cha bure na cha wazi, mbadala wa Discord."
+  "stoat_desc": "Kiteja cha mazungumzo cha bure na cha wazi, mbadala wa Discord.",
+  "needed_requirements_title": "Mahitaji",
+  "needed_requirements_message": "Sifa zifuatazo zinahitajika kabla ya kuendelea na {script_name}:",
+  "needed_requirements_footer": "Vipengele hivi vya mahitaji vitakamatia kwanza, kisha hati kuu itaendelea."
 }

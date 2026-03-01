@@ -341,5 +341,8 @@
   "cancel_label": "Cancel",
   "haguichi_desc": "Facilitates the use of Hamachi on Linux with an intuitive graphical interface that covers all its features.",
   "firefoxsnap_desc": "Removes Firefox Snap from Ubuntu systems and installs the official Mozilla PPA version while ensuring it will track updates from that repository in the future.",
-  "stoat_desc": "Free and open-source chat client, alternative to Discord."
+  "stoat_desc": "Free and open-source chat client, alternative to Discord.",
+  "needed_requirements_title": "Requirements",
+  "needed_requirements_message": "The following features are required before proceeding with {script_name}:",
+  "needed_requirements_footer": "These required features will be installed first, then the main script will proceed."
 }

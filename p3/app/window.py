@@ -1,19 +1,26 @@
-from .gtk_common import Gtk, GLib, Gdk, Vte, Pango
-from gi.repository import GdkPixbuf
-import os, shutil, threading, asyncio
+import asyncio
+import os
+import shutil
+import threading
 
-from . import parser
-from . import header
-from . import compat
-from . import head_menu
-from . import reboot_helper
-from . import search_helper
-from . import get_icon_path
-from . import cli_helper
-from . import term_view
-from . import revealer
-from .updater.update_helper import UpdateHelper
+from gi.repository import GdkPixbuf
+
+from . import (
+    cli_helper,
+    compat,
+    get_icon_path,
+    head_menu,
+    header,
+    needed_helper,
+    parser,
+    reboot_helper,
+    revealer,
+    search_helper,
+    term_view,
+)
+from .gtk_common import Gdk, GLib, Gtk, Pango, Vte
 from .updater.update_dialog import UpdateDialog
+from .updater.update_helper import UpdateHelper
 
 
 class AppWindow(Gtk.ApplicationWindow):
@@ -22,7 +29,7 @@ class AppWindow(Gtk.ApplicationWindow):
         self.translations = translations
 
         self.set_title("LinuxToys")
-        self.set_default_size(800, 580) ## 
+        self.set_default_size(800, 580)  ##
         # self.set_resizable(False) ## Desabilita o redimensionamento da janela
 
         # Set window icon for proper GNOME integration
@@ -33,10 +40,12 @@ class AppWindow(Gtk.ApplicationWindow):
         self.current_category_info = None  # Track current category for header updates
         self.navigation_stack = []  # Stack to track navigation history for proper back button behavior
         self.view_counter = 0  # Counter for unique view names
-        
+
         # Initialize search functionality with cache
         self.script_cache = search_helper.ScriptCache()
-        self.search_engine = search_helper.create_search_engine(self.translations, self.script_cache)
+        self.search_engine = search_helper.create_search_engine(
+            self.translations, self.script_cache
+        )
         self.search_active = False
         self.search_results = []
 
@@ -53,25 +62,29 @@ class AppWindow(Gtk.ApplicationWindow):
         # HeaderBar setup with Hyprland/Wayland compatibility
         self.header_bar = Gtk.HeaderBar()
         self.header_bar.set_show_close_button(True)
-        
+
         # Try to detect if we're running on Wayland/Hyprland and adjust accordingly
         try:
             # Check if we should use server-side decorations for better compatibility
             display = Gdk.Display.get_default()
             if display:
                 backend_type = type(display).__name__
-                if 'Wayland' in backend_type:
+                if "Wayland" in backend_type:
                     # On Wayland (including Hyprland), prefer server-side decorations
                     # This can help avoid hanging issues with client-side decorations
                     self.set_decorated(True)  # Enable window manager decorations
                     # Still set the headerbar but with less aggressive CSD
-                    self.header_bar.set_decoration_layout("menu:minimize,maximize,close")
+                    self.header_bar.set_decoration_layout(
+                        "menu:minimize,maximize,close"
+                    )
         except Exception as e:
             print(f"Warning: Could not detect display backend: {e}")
-        
+
         self.set_titlebar(self.header_bar)
 
-        self.back_button = Gtk.Button.new_from_icon_name("go-previous-symbolic", Gtk.IconSize.BUTTON)
+        self.back_button = Gtk.Button.new_from_icon_name(
+            "go-previous-symbolic", Gtk.IconSize.BUTTON
+        )
         self.header_bar.pack_start(self.back_button)
 
         # Create search UI components
@@ -79,21 +92,22 @@ class AppWindow(Gtk.ApplicationWindow):
 
         # Store reference to the menu button for later updates
         self.menu_button = head_menu.MenuButton(
-            parent_window=self,
-            on_language_changed=self.on_language_changed
+            parent_window=self, on_language_changed=self.on_language_changed
         )
         self.header_bar.pack_end(self.menu_button)
 
         self.main_stack = Gtk.Stack()
         self.main_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
-        self.main_stack.set_transition_duration(200)  # Set a reasonable transition duration
+        self.main_stack.set_transition_duration(
+            200
+        )  # Set a reasonable transition duration
         main_vbox.pack_start(self.main_stack, True, True, 0)
 
         self.categories_flowbox = self.create_flowbox()
         self.categories_view = Gtk.ScrolledWindow()
         self.categories_view.add(self.categories_flowbox)
         self.main_stack.add_named(self.categories_view, "categories")
-        
+
         self.scripts_flowbox = self.create_flowbox()
         self.scripts_view = Gtk.ScrolledWindow()
         self.scripts_view.add(self.scripts_flowbox)
@@ -110,7 +124,7 @@ class AppWindow(Gtk.ApplicationWindow):
 
         # --- Load Data and Connect Signals ---
         self.load_categories()
-        
+
         self.back_button.connect("clicked", self.on_back_button_clicked)
 
         # --- Check for pending ostree deployments ---
@@ -121,8 +135,8 @@ class AppWindow(Gtk.ApplicationWindow):
         self.show_categories_view()  # Call this after show_all to ensure proper visibility state
 
         # Connect focus events to enable/disable tooltips
-        self.connect('focus-in-event', self._on_focus_in)
-        self.connect('focus-out-event', self._on_focus_out)
+        self.connect("focus-in-event", self._on_focus_in)
+        self.connect("focus-out-event", self._on_focus_out)
 
         self.connect("key-press-event", self._on_key_press)
 
@@ -140,20 +154,18 @@ class AppWindow(Gtk.ApplicationWindow):
 
     def _populate_search_cache(self):
         """Populate the search cache in a background thread to avoid blocking the UI."""
+
         def populate_in_background():
             try:
                 self.script_cache.populate(self.translations)
             except Exception as e:
                 print(f"Error populating search cache: {e}")
-        
+
         threading.Thread(target=populate_in_background, daemon=True).start()
         return False  # Remove from idle callbacks
 
     def _check_updates(self):
-        threading.Thread(
-            target=self._show_dialog_and_update,
-            daemon=True
-        ).start()
+        threading.Thread(target=self._show_dialog_and_update, daemon=True).start()
 
     def _show_dialog_and_update(self):
         self._check = UpdateHelper()
@@ -171,26 +183,40 @@ class AppWindow(Gtk.ApplicationWindow):
             return False
 
         if keyval == Gdk.KEY_Delete:
-            selected_children = [child.get_child().info for child in self.scripts_flowbox.get_selected_children()]
+            selected_children = [
+                child.get_child().info
+                for child in self.scripts_flowbox.get_selected_children()
+            ]
             self._delete_local_scripts(selected_children)
 
         elif (event.state & Gdk.ModifierType.CONTROL_MASK) and keyval == Gdk.KEY_a:
-            if self.current_category_info and f"{self.current_category_info.get('path')}/" == self.local_sh_dir:
-                [ self.scripts_flowbox.select_child(child) for child in self.scripts_flowbox.get_children()[1:] ]
+            if (
+                self.current_category_info
+                and f"{self.current_category_info.get('path')}/" == self.local_sh_dir
+            ):
+                [
+                    self.scripts_flowbox.select_child(child)
+                    for child in self.scripts_flowbox.get_children()[1:]
+                ]
                 return True
 
         elif keyval == Gdk.KEY_space:
             # In checklist mode, Space toggles the checkbox of the currently selected item
-            if (self.current_category_info and 
-                self.current_category_info.get('display_mode', 'menu') == 'checklist'):
+            if (
+                self.current_category_info
+                and self.current_category_info.get("display_mode", "menu")
+                == "checklist"
+            ):
                 selected_children = self.scripts_flowbox.get_selected_children()
                 if selected_children:
                     # Get the first selected child
                     child = selected_children[0]
                     event_box = child.get_child()
                     # Use the stored checkbox reference
-                    if hasattr(event_box, 'checkbox'):
-                        event_box.checkbox.set_active(not event_box.checkbox.get_active())
+                    if hasattr(event_box, "checkbox"):
+                        event_box.checkbox.set_active(
+                            not event_box.checkbox.get_active()
+                        )
                         return True
                 return False
 
@@ -198,34 +224,39 @@ class AppWindow(Gtk.ApplicationWindow):
             # Determine which flowbox has selections based on current view
             current_view = self.main_stack.get_visible_child_name()
             flowbox_to_check = None
-            
+
             if current_view == "categories":
                 flowbox_to_check = self.categories_flowbox
             elif current_view == "search":
                 flowbox_to_check = self.search_flowbox
             else:  # scripts view
                 flowbox_to_check = self.scripts_flowbox
-            
+
             # First, deselect any selected items
             if flowbox_to_check and flowbox_to_check.get_selected_children():
                 flowbox_to_check.unselect_all()
                 return True
-            
+
             # If nothing is selected, go back to the previous menu
             # (but not if we're already at the main categories view)
             if current_view != "categories" or self.search_active:
                 self.on_back_button_clicked(None)
                 return True
-            
+
             return False
 
         elif keyval == Gdk.KEY_Return:
             # In checklist mode, special handling
-            if (self.current_category_info and 
-                self.current_category_info.get('display_mode', 'menu') == 'checklist'):
+            if (
+                self.current_category_info
+                and self.current_category_info.get("display_mode", "menu")
+                == "checklist"
+            ):
                 # Get all checked items
-                checked_scripts = [cb.script_info for cb in self.check_buttons if cb.get_active()]
-                
+                checked_scripts = [
+                    cb.script_info for cb in self.check_buttons if cb.get_active()
+                ]
+
                 if checked_scripts:
                     # Run all checked scripts
                     self.on_install_checklist(None)
@@ -237,17 +268,20 @@ class AppWindow(Gtk.ApplicationWindow):
                         # Simulate a click on the selected item
                         sim_event = Gdk.Event.new(Gdk.EventType.BUTTON_PRESS)
                         sim_event.button = 1
-                        selected_children[0].get_child().emit("button-press-event", sim_event)
+                        selected_children[0].get_child().emit(
+                            "button-press-event", sim_event
+                        )
                         return True
             else:
                 # Normal menu behavior: activate the selected item
                 screens = {
                     "categories": self.categories_flowbox.get_selected_children(),
-                    "search": self.search_flowbox.get_selected_children()
+                    "search": self.search_flowbox.get_selected_children(),
                 }
 
-                selected_widget = (
-                    screens.get(self.main_stack.get_visible_child_name(), self.scripts_flowbox.get_selected_children())
+                selected_widget = screens.get(
+                    self.main_stack.get_visible_child_name(),
+                    self.scripts_flowbox.get_selected_children(),
                 )
 
                 sim_event = Gdk.Event.new(Gdk.EventType.BUTTON_PRESS)
@@ -259,9 +293,14 @@ class AppWindow(Gtk.ApplicationWindow):
 
         # Quick search: if typing letters without modifiers, focus search entry and type there
         current_focus = self.get_focus()
-        if (current_focus != self.search_entry and 
-            (65 <= keyval <= 90 or 97 <= keyval <= 122) and 
-            not (event.state & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.META_MASK))):
+        if (
+            current_focus != self.search_entry
+            and (65 <= keyval <= 90 or 97 <= keyval <= 122)
+            and not (
+                event.state
+                & (Gdk.ModifierType.CONTROL_MASK | Gdk.ModifierType.META_MASK)
+            )
+        ):
             self.search_entry.grab_focus()
             current_text = self.search_entry.get_text()
             char = chr(keyval)
@@ -279,39 +318,52 @@ class AppWindow(Gtk.ApplicationWindow):
 
     def _enable_drag_and_drop(self):
         """Enable drag-and-drop functionality for the Local Scripts category."""
-        if not hasattr(self, 'drag_and_drop_enabled'):
+        if not hasattr(self, "drag_and_drop_enabled"):
             self._setup_drag_and_drop()
-        
+
         if not self.drag_and_drop_enabled:
             self.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
             if self.drag_handler_id is None:
-                self.drag_handler_id = self.connect("drag-data-received", self._on_drag_data_received)
+                self.drag_handler_id = self.connect(
+                    "drag-data-received", self._on_drag_data_received
+                )
             self.drag_dest_add_uri_targets()
             self.drag_and_drop_enabled = True
 
     def _disable_drag_and_drop(self):
         """Disable drag-and-drop functionality."""
-        if not hasattr(self, 'drag_and_drop_enabled'):
+        if not hasattr(self, "drag_and_drop_enabled"):
             return
-            
+
         if self.drag_and_drop_enabled:
             self.drag_dest_unset()
             self.drag_and_drop_enabled = False
 
     def _is_local_scripts_category(self, category_info):
         """Check if the given category info represents the Local Scripts category."""
-        if not category_info or not hasattr(self, 'local_sh_dir'):
+        if not category_info or not hasattr(self, "local_sh_dir"):
             return False
-        return category_info.get('path') == self.local_sh_dir.rstrip('/')
+        return category_info.get("path") == self.local_sh_dir.rstrip("/")
 
     def _on_drag_data_received(self, widget, context, x, y, data, info, time):
         """Handle drag-and-drop of .sh files. Only active when viewing Local Scripts category."""
-        sh_paths = [ os.path.normpath(uri[7:]) for uri in data.get_uris() if uri.startswith('file://') and uri.endswith('.sh') ]
+        sh_paths = [
+            os.path.normpath(uri[7:])
+            for uri in data.get_uris()
+            if uri.startswith("file://") and uri.endswith(".sh")
+        ]
         from urllib.parse import unquote
+
         if sh_paths:
             os.makedirs(os.path.dirname(self.local_sh_dir), exist_ok=True)
-            [ shutil.copy2(unquote(sh_path), f"{self.local_sh_dir}{os.path.basename(unquote(sh_path))}") for sh_path in sh_paths ]
-            
+            [
+                shutil.copy2(
+                    unquote(sh_path),
+                    f"{self.local_sh_dir}{os.path.basename(unquote(sh_path))}",
+                )
+                for sh_path in sh_paths
+            ]
+
             # Refresh the current view since we know we're in Local Scripts category
             self.load_scripts(self.current_category_info)
 
@@ -322,9 +374,9 @@ class AppWindow(Gtk.ApplicationWindow):
         """
         # Get system compatibility keys
         system_compat_keys = compat.get_system_compat_keys()
-        
+
         # Only check on ostree-based systems
-        if {'ostree', 'ublue'} & system_compat_keys:
+        if {"ostree", "ublue"} & system_compat_keys:
             if reboot_helper.check_ostree_pending_deployments():
                 # Use GLib.idle_add to ensure the dialog shows after the window is fully initialized
                 GLib.idle_add(self._show_ostree_deployment_warning)
@@ -335,9 +387,7 @@ class AppWindow(Gtk.ApplicationWindow):
         Called via GLib.idle_add to ensure proper timing.
         """
         reboot_helper.handle_ostree_deployment_requirement(
-            self, 
-            self.translations, 
-            self._close_application
+            self, self.translations, self._close_application
         )
         return False  # Remove from idle callbacks
 
@@ -347,6 +397,7 @@ class AppWindow(Gtk.ApplicationWindow):
         This ensures the icon appears correctly in the taskbar and window manager.
         Uses async loading to prevent blocking on Hyprland.
         """
+
         def load_icon_async():
             """Load icon in background thread to prevent blocking."""
             try:
@@ -358,11 +409,20 @@ class AppWindow(Gtk.ApplicationWindow):
                     # Development/local paths
                     get_icon_path("linuxtoys.svg"),
                     # Fallback to the icon in the source directory
-                    os.path.join(os.path.dirname(__file__), "..", "..", "src", "linuxtoys.svg"),
+                    os.path.join(
+                        os.path.dirname(__file__), "..", "..", "src", "linuxtoys.svg"
+                    ),
                     # Relative path from the script location
-                    os.path.join(os.path.dirname(__file__), "..", "..", "..", "src", "linuxtoys.svg")
+                    os.path.join(
+                        os.path.dirname(__file__),
+                        "..",
+                        "..",
+                        "..",
+                        "src",
+                        "linuxtoys.svg",
+                    ),
                 ]
-                
+
                 icon_set = False
                 for icon_path in icon_paths:
                     if icon_path and os.path.exists(icon_path):
@@ -375,20 +435,23 @@ class AppWindow(Gtk.ApplicationWindow):
                         except Exception:
                             # Continue to next path if this one fails
                             continue
-                
+
                 # If no file-based icon worked, try setting icon name for theme integration
                 if not icon_set:
                     GLib.idle_add(lambda: self.set_icon_name("linuxtoys"))
-                    
+
             except Exception:
                 # Fallback: set a generic icon if all else fails
                 try:
-                    GLib.idle_add(lambda: self.set_icon_name("application-x-executable"))
+                    GLib.idle_add(
+                        lambda: self.set_icon_name("application-x-executable")
+                    )
                 except Exception:
                     pass  # If even this fails, just continue without an icon
-        
+
         # Load icon asynchronously to prevent blocking on window manager issues
         import threading
+
         threading.Thread(target=load_icon_async, daemon=True).start()
 
     def _set_tooltips_enabled(self, enabled):
@@ -397,7 +460,7 @@ class AppWindow(Gtk.ApplicationWindow):
             widget = flowbox_child.get_child()
             widget.set_has_tooltip(enabled)
             if enabled:
-                description = getattr(widget, 'info', {}).get('description', '')
+                description = getattr(widget, "info", {}).get("description", "")
                 if description:
                     widget.set_tooltip_text(description)
                 else:
@@ -409,7 +472,7 @@ class AppWindow(Gtk.ApplicationWindow):
             widget = flowbox_child.get_child()
             widget.set_has_tooltip(enabled)
             if enabled:
-                description = getattr(widget, 'info', {}).get('description', '')
+                description = getattr(widget, "info", {}).get("description", "")
                 if description:
                     widget.set_tooltip_text(description)
                 else:
@@ -427,12 +490,14 @@ class AppWindow(Gtk.ApplicationWindow):
         """Create the search UI components for the header bar."""
         # Create search entry
         self.search_entry = Gtk.SearchEntry()
-        self.search_entry.set_placeholder_text(self.translations.get("search_placeholder", "Search features"))
+        self.search_entry.set_placeholder_text(
+            self.translations.get("search_placeholder", "Search features")
+        )
         self.search_entry.set_size_request(250, -1)  # Set minimum width
         self.search_entry.connect("search-changed", self._on_search_changed)
         self.search_entry.connect("activate", self._on_search_activate)
         self.search_entry.connect("key-press-event", self._on_search_key_press)
-        
+
         # Pack the search entry directly to the left side of the header (after back button)
         self.header_bar.pack_start(self.search_entry)
 
@@ -445,13 +510,13 @@ class AppWindow(Gtk.ApplicationWindow):
         flowbox.set_selection_mode(Gtk.SelectionMode.MULTIPLE)
         flowbox.set_homogeneous(True)  # Make all children the same size
         ## Adiciona margem de 32 px em todos os lados
-        flowbox.set_margin_left(32) 
-        flowbox.set_margin_top(8) 
-        flowbox.set_margin_right(32) 
+        flowbox.set_margin_left(32)
+        flowbox.set_margin_top(8)
+        flowbox.set_margin_right(32)
         flowbox.set_margin_bottom(32)
         ## Define espaçamento horizontal e vertical entre os itens (em pixels)
         flowbox.set_column_spacing(16)  ## espaço entre itens lado a lado
-        flowbox.set_row_spacing(12)     ## espaço entre linhas
+        flowbox.set_row_spacing(12)  ## espaço entre linhas
         return flowbox
 
     def _on_toggled_check(self, button):
@@ -468,6 +533,7 @@ class AppWindow(Gtk.ApplicationWindow):
 
     def create_item_widget(self, item_info, checklist: bool = False):
         import os
+
         box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
         box.set_size_request(128, 52)  # Fixed width for all items
         box.set_hexpand(False)
@@ -477,51 +543,60 @@ class AppWindow(Gtk.ApplicationWindow):
         left_pad.set_size_request(10, 1)
         box.pack_start(left_pad, False, False, 0)
 
-        label = Gtk.Label(label=item_info['name'])
+        label = Gtk.Label(label=item_info["name"])
         label.set_line_wrap(True)
         label.set_justify(Gtk.Justification.CENTER)
         label.set_halign(Gtk.Align.CENTER)
         label.set_valign(Gtk.Align.CENTER)
         label.set_max_width_chars(28)  # Limit label width
-        label.set_width_chars(4)      # Set consistent width
+        label.set_width_chars(4)  # Set consistent width
         label.set_hexpand(False)
-        
+
         # Make categories and subcategories bold, keep scripts regular
         is_main_category = self.current_category_info is None  # We're in the main menu
-        is_subcategory = item_info.get('is_subcategory', False)
-        is_category_type = item_info.get('type') == 'category'
-        is_not_script = not item_info.get('is_script', False)
+        is_subcategory = item_info.get("is_subcategory", False)
+        is_category_type = item_info.get("type") == "category"
+        is_not_script = not item_info.get("is_script", False)
 
         if checklist:
             check = Gtk.CheckButton()
-            check.connect('toggled', self._on_toggled_check)
+            check.connect("toggled", self._on_toggled_check)
             check.script_info = item_info
             # Make checkbox non-focusable so it doesn't interfere with keyboard navigation
             check.set_can_focus(False)
             box.pack_start(check, False, False, 0)
 
-        if is_subcategory or (is_category_type and is_not_script) or (is_main_category and is_not_script):
+        if (
+            is_subcategory
+            or (is_category_type and is_not_script)
+            or (is_main_category and is_not_script)
+        ):
             # This is a category or subcategory - make it bold
             # Escape HTML characters to prevent markup issues
             import html
-            escaped_name = html.escape(item_info['name'])
+
+            escaped_name = html.escape(item_info["name"])
             label.set_markup(f"<b>{escaped_name}</b>")
         box.pack_start(label, True, True, 0)
 
-        icon_value = item_info.get('icon', 'application-x-executable')
+        icon_value = item_info.get("icon", "application-x-executable")
         icon_widget = None
         icon_size = 38  # Target icon size
-        
+
         # If icon_value looks like a file path or just a filename, use Gtk.Image.new_from_file
-        if icon_value.endswith('.png') or icon_value.endswith('.svg'):
+        if icon_value.endswith(".png") or icon_value.endswith(".svg"):
             # If only a filename, use the global icon path resolver
-            if not os.path.isabs(icon_value) and '/' not in icon_value:
-                icon_path = get_icon_path("local-script.svg" if ".local/linuxtoys/scripts" in item_info.get('path') else icon_value)
+            if not os.path.isabs(icon_value) and "/" not in icon_value:
+                icon_path = get_icon_path(
+                    "local-script.svg"
+                    if ".local/linuxtoys/scripts" in item_info.get("path")
+                    else icon_value
+                )
             else:
                 icon_path = icon_value if os.path.exists(icon_value) else None
-                
+
             if icon_path and os.path.exists(icon_path):
-                if icon_path.endswith('.svg') or icon_path.endswith('.png'):
+                if icon_path.endswith(".svg") or icon_path.endswith(".png"):
                     # For SVG files, load as pixbuf with specific size
                     try:
                         pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_scale(
@@ -530,18 +605,22 @@ class AppWindow(Gtk.ApplicationWindow):
                         icon_widget = Gtk.Image.new_from_pixbuf(pixbuf)
                     except Exception:
                         # Fallback to default icon if SVG loading fails
-                        icon_widget = Gtk.Image.new_from_icon_name('application-x-executable', Gtk.IconSize.DIALOG)
+                        icon_widget = Gtk.Image.new_from_icon_name(
+                            "application-x-executable", Gtk.IconSize.DIALOG
+                        )
                         icon_widget.set_pixel_size(icon_size)
                 else:
                     # For PNG files, use regular loading and set pixel size
                     icon_widget = Gtk.Image.new_from_file(icon_path)
                     icon_widget.set_pixel_size(icon_size)
             else:
-                icon_widget = Gtk.Image.new_from_icon_name('application-x-executable', Gtk.IconSize.DIALOG)
+                icon_widget = Gtk.Image.new_from_icon_name(
+                    "application-x-executable", Gtk.IconSize.DIALOG
+                )
                 icon_widget.set_pixel_size(icon_size)
         else:
             icon_widget = Gtk.Image.new_from_icon_name(icon_value, Gtk.IconSize.DIALOG)
-            icon_widget.set_pixel_size(icon_size) ## altura dos icones
+            icon_widget.set_pixel_size(icon_size)  ## altura dos icones
         icon_widget.set_halign(Gtk.Align.END)
         icon_widget.set_valign(Gtk.Align.CENTER)
 
@@ -554,14 +633,16 @@ class AppWindow(Gtk.ApplicationWindow):
         # Store reference to checkbox for easy access in keyboard handlers
         if checklist:
             event_box.checkbox = check
-        
+
         # Enable mouse events for hover effects and right-click
-        event_box.set_events(event_box.get_events() | 
-                           Gdk.EventMask.ENTER_NOTIFY_MASK | 
-                           Gdk.EventMask.LEAVE_NOTIFY_MASK |
-                           Gdk.EventMask.BUTTON_PRESS_MASK |
-                           Gdk.EventMask.BUTTON_RELEASE_MASK)
-        
+        event_box.set_events(
+            event_box.get_events()
+            | Gdk.EventMask.ENTER_NOTIFY_MASK
+            | Gdk.EventMask.LEAVE_NOTIFY_MASK
+            | Gdk.EventMask.BUTTON_PRESS_MASK
+            | Gdk.EventMask.BUTTON_RELEASE_MASK
+        )
+
         # Connect hover events only (click events are connected separately)
         event_box.drag_source_set(
             Gdk.ModifierType.BUTTON1_MASK,
@@ -587,53 +668,56 @@ class AppWindow(Gtk.ApplicationWindow):
         for child in selected_children:
             event_box = child.get_child()
             infos = event_box.info
-            if infos.get('path'):
-                uris.append(GLib.filename_to_uri(infos.get('path')))
+            if infos.get("path"):
+                uris.append(GLib.filename_to_uri(infos.get("path")))
 
         if not uris:
             infos = widget.info
-            if infos.get('path'):
-                uris.append(GLib.filename_to_uri(infos.get('path')))
+            if infos.get("path"):
+                uris.append(GLib.filename_to_uri(infos.get("path")))
 
         data.set_uris(uris)
 
     def load_categories(self):
         """Loads categories and connects their click event."""
         categories = parser.get_categories(self.translations)
-        
+
         # Store current category info and temporarily set to None for proper bold formatting
         temp_current_category = self.current_category_info
         self.current_category_info = None
-        
-        self.categories_flowbox.foreach(lambda widget: self.categories_flowbox.remove(widget))
+
+        self.categories_flowbox.foreach(
+            lambda widget: self.categories_flowbox.remove(widget)
+        )
         for cat in categories:
             widget = self.create_item_widget(cat)
-            description = cat.get('description', '')
+            description = cat.get("description", "")
             if description:
                 widget.set_tooltip_text(description)
             else:
                 widget.set_tooltip_text(None)
             self.categories_flowbox.add(widget)
-        
+
         # Restore the current category info
         self.current_category_info = temp_current_category
-        
+
         self.categories_flowbox.show_all()
-            
-            
+
     def _load_scripts_into_flowbox(self, flowbox, category_info):
         """Helper method to load scripts into a specific flowbox."""
         # Clear the flowbox first
         for child in flowbox.get_children():
             flowbox.remove(child)
 
-        scripts = parser.get_scripts_for_category(category_info['path'], self.translations)
+        scripts = parser.get_scripts_for_category(
+            category_info["path"], self.translations
+        )
 
-        checklist_mode = category_info.get('display_mode', 'menu') == 'checklist'
+        checklist_mode = category_info.get("display_mode", "menu") == "checklist"
 
         for script_info in scripts:
             widget = self.create_item_widget(script_info, checklist=checklist_mode)
-            description = script_info.get('description', '')
+            description = script_info.get("description", "")
             if description:
                 widget.set_tooltip_text(description)
             else:
@@ -655,11 +739,14 @@ class AppWindow(Gtk.ApplicationWindow):
             self._show_reboot_warning_dialog()
             return
 
-        selected_scripts = [sh.script_info for sh in self.check_buttons if sh.get_active()]
+        selected_scripts = [
+            sh.script_info for sh in self.check_buttons if sh.get_active()
+        ]
         if not selected_scripts:
             return
 
-        for cb in self.check_buttons[:]: cb.set_active(False)
+        for cb in self.check_buttons[:]:
+            cb.set_active(False)
 
         deps = asyncio.run(self._process_needed_scripts(selected_scripts))
 
@@ -667,7 +754,8 @@ class AppWindow(Gtk.ApplicationWindow):
 
     def on_cancel_checklist(self, button):
         """Uncheck all boxes, remove checklist buttons from footer, and return to previous view."""
-        for cb in self.check_buttons[:]: cb.set_active(False)
+        for cb in self.check_buttons[:]:
+            cb.set_active(False)
 
         # Use back button logic to go to the appropriate previous view
         self.on_back_button_clicked(None)
@@ -678,43 +766,45 @@ class AppWindow(Gtk.ApplicationWindow):
         if self.reboot_required:
             self._show_reboot_warning_dialog()
             return
-            
+
         info = widget.info
-        
+
         # Check if this is the "Create New Script" option
-        if info.get('is_create_script'):
+        if info.get("is_create_script"):
             self._handle_create_new_script()
             return
-        
+
         # If this is a root script (shown as a category), execute it directly
-        if info.get('is_script'):
+        if info.get("is_script"):
             # Use VTE-based term_view for execution
             self.open_term_view([info])
         else:
-            # This is a category or subcategory - navigate to show its contents  
+            # This is a category or subcategory - navigate to show its contents
             # Create a new view for the subcategory to enable proper animation
             self.view_counter += 1
             new_view_name = f"scripts_{self.view_counter}"
-            
+
             # Create new flowbox and scrolled window for this level
             new_flowbox = self.create_flowbox()
             new_scrolled_view = Gtk.ScrolledWindow()
             new_scrolled_view.add(new_flowbox)
-            
+
             # Load content into the new view
             self._load_scripts_into_flowbox(new_flowbox, info)
-            
+
             # Add the new view to the stack
             self.main_stack.add_named(new_scrolled_view, new_view_name)
             new_scrolled_view.show_all()
-            
+
             # Set transition for forward navigation
-            self.main_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
-            
+            self.main_stack.set_transition_type(
+                Gtk.StackTransitionType.SLIDE_LEFT_RIGHT
+            )
+
             # Update the scripts references
             self.scripts_flowbox = new_flowbox
             self.scripts_view = new_scrolled_view
-            
+
             # Show the new view with animation
             self.show_scripts_view(info)
 
@@ -742,10 +832,26 @@ class AppWindow(Gtk.ApplicationWindow):
     async def _process_needed_scripts(self, script_infos):
         deps = []
         for info in script_infos:
-            if has_depends := info.get('needed'):
-                tasks = [cli_helper.find_script_by_name_async(_d, self.translations) for _d in has_depends]
+            if has_depends := info.get("needed"):
+                tasks = [
+                    cli_helper.find_script_by_name_async(_d, self.translations)
+                    for _d in has_depends
+                ]
                 res = await asyncio.gather(*tasks)
-                deps.extend([r for r in res if r])
+                required_scripts = [r for r in res if r]
+
+                # Show dialog asking for confirmation to install required features
+                if required_scripts:
+                    script_name = info.get("name", "Script")
+                    confirmed = needed_helper.show_needed_requirements_dialog(
+                        self, self.translations, script_name, required_scripts
+                    )
+
+                    # If user cancelled, don't proceed
+                    if not confirmed:
+                        return []
+
+                deps.extend(required_scripts)
 
             deps.append(info)
 
@@ -759,46 +865,51 @@ class AppWindow(Gtk.ApplicationWindow):
             return
 
         info = widget.info
-        
+
         # Check if this is the "Create New Script" option
-        if info.get('is_create_script'):
+        if info.get("is_create_script"):
             self._handle_create_new_script()
             return
 
         deps = asyncio.run(self._process_needed_scripts([info]))
 
-        self.open_term_view(deps)
+        # Only open terminal if user didn't cancel the needed requirements dialog
+        if deps:
+            self.open_term_view(deps)
 
     def _handle_create_new_script(self):
         """Handle the creation of a new local script."""
         # Import the InputDialog from head_menu
         from . import head_menu
-        
+
         dialog = head_menu.InputDialog(parent=self)
-        
+
         if dialog.run() == Gtk.ResponseType.OK:
             sh_name = dialog.get_input()
             if sh_name.strip():  # Check if name is not empty
                 import re
-                sh_filename = re.sub(r'[^a-z0-9-_]', '', sh_name.lower())
+
+                sh_filename = re.sub(r"[^a-z0-9-_]", "", sh_name.lower())
                 if sh_filename:
                     self._create_and_open_local_sh(filename=sh_filename, name=sh_name)
                     # Refresh the current view to show the new script
                     self._refresh_current_local_scripts_view()
-        
+
         dialog.destroy()
 
     def _create_and_open_local_sh(self, filename=None, name=None):
         """Create a new local script file and open it for editing."""
         import os
-        
-        local_sh_dir = f'{os.environ["HOME"]}/.local/linuxtoys/scripts/'
+
+        local_sh_dir = f"{os.environ['HOME']}/.local/linuxtoys/scripts/"
         os.makedirs(local_sh_dir, exist_ok=True)
-        
+
         # Get translated documentation comment
-        doc_comment = self.translations.get("script_template_doc_comment", 
-                                           "# Refer to the documentation at https://linuxtoys.luminhost.xyz/handbook.html for more information.")
-        
+        doc_comment = self.translations.get(
+            "script_template_doc_comment",
+            "# Refer to the documentation at https://linuxtoys.luminhost.xyz/handbook.html for more information.",
+        )
+
         _template_local_script = f"""#!/bin/bash
 # name: {name}
 # version: 1.0
@@ -818,46 +929,46 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
             f.write(_template_local_script)
 
         defaults = {
-           'name': 'No Name',
-           'version': 'N/A',
-           'description': '',
-           'icon': 'application-x-executable',
-           'reboot': 'no',
-           'noconfirm': 'no',
-           'repo': ''
+            "name": "No Name",
+            "version": "N/A",
+            "description": "",
+            "icon": "application-x-executable",
+            "reboot": "no",
+            "noconfirm": "no",
+            "repo": "",
         }
 
         _local_data = parser._parse_metadata_file(
-            f"{local_sh_dir}{filename}.sh",
-            defaults,
-            self.translations)
+            f"{local_sh_dir}{filename}.sh", defaults, self.translations
+        )
 
         self.script_cache.scripts.append(_local_data)
 
-        os.system(f'xdg-open {local_sh_dir}{filename}.sh')
+        os.system(f"xdg-open {local_sh_dir}{filename}.sh")
 
     def _refresh_current_local_scripts_view(self):
         """Refresh the current view if we're viewing local scripts."""
-        if (hasattr(self, 'current_category_info') and 
-            self.current_category_info and 
-            '.local/linuxtoys/scripts' in self.current_category_info.get('path', '')):
+        if (
+            hasattr(self, "current_category_info")
+            and self.current_category_info
+            and ".local/linuxtoys/scripts" in self.current_category_info.get("path", "")
+        ):
             # Reload the scripts for the current local scripts view
-            self._load_scripts_into_flowbox(self.scripts_flowbox, self.current_category_info)
+            self._load_scripts_into_flowbox(
+                self.scripts_flowbox, self.current_category_info
+            )
             self.scripts_flowbox.show_all()
-
 
     def _show_reboot_warning_dialog(self):
         """Shows a dialog warning that a reboot is required before continuing."""
         reboot_helper.handle_reboot_requirement(
-            self, 
-            self.translations, 
-            self._close_application
+            self, self.translations, self._close_application
         )
-    
+
     def _show_cancel_script_warning_dialog(self):
         """
         Shows a confirmation dialog warning that cancelling will stop the running script.
-        
+
         Returns:
             bool: True if user confirmed to cancel, False if user chose to continue
         """
@@ -866,35 +977,35 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
             flags=0,
             message_type=Gtk.MessageType.WARNING,
             buttons=Gtk.ButtonsType.NONE,
-            text=self.translations.get('cancel_script_title', 'Cancel Running Script?')
+            text=self.translations.get("cancel_script_title", "Cancel Running Script?"),
         )
-        
+
         dialog.format_secondary_text(
             self.translations.get(
-                'cancel_script_message',
-                'A script is currently running. If you go back now, the running task will be cancelled. Are you sure you want to cancel?'
+                "cancel_script_message",
+                "A script is currently running. If you go back now, the running task will be cancelled. Are you sure you want to cancel?",
             )
         )
-        
+
         # Add buttons
         dialog.add_button(
-            self.translations.get('cancel_script_continue_btn', 'Continue Running'),
-            Gtk.ResponseType.NO
+            self.translations.get("cancel_script_continue_btn", "Continue Running"),
+            Gtk.ResponseType.NO,
         )
         dialog.add_button(
-            self.translations.get('cancel_script_cancel_btn', 'Cancel Script'),
-            Gtk.ResponseType.YES
+            self.translations.get("cancel_script_cancel_btn", "Cancel Script"),
+            Gtk.ResponseType.YES,
         )
-        
+
         # Set focus to the "Continue Running" button (safer default)
         dialog.set_default_response(Gtk.ResponseType.NO)
-        
+
         response = dialog.run()
         dialog.destroy()
-        
+
         # Return True if user clicked "Cancel Script" (YES), False otherwise
         return response == Gtk.ResponseType.YES
-    
+
     def _close_application(self):
         """Closes the application gracefully."""
         self.get_application().quit()
@@ -902,47 +1013,49 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
     def on_language_changed(self, new_language_code):
         """Handle language change by reloading translations and updating UI"""
         from . import lang_utils
-        
+
         # Load new translations
         self.translations = lang_utils.load_translations(new_language_code)
 
         # Update search engine translations
         self.search_engine.update_translations(self.translations)
-        
+
         # Update search entry placeholder text
-        self.search_entry.set_placeholder_text(self.translations.get("search_placeholder", "Search features"))
-        
+        self.search_entry.set_placeholder_text(
+            self.translations.get("search_placeholder", "Search features")
+        )
+
         # Refresh the UI with new translations
         self._refresh_ui_with_new_translations()
-    
+
     def _refresh_ui_with_new_translations(self):
         """Refresh all UI elements with new translations"""
         # Update header
         self._update_header(self.current_category_info)
-        
+
         # Update title bar
         if self.current_category_info:
-            category_name = self.current_category_info.get('name', 'Unknown')
+            category_name = self.current_category_info.get("name", "Unknown")
             self.header_bar.props.title = f"LinuxToys: {category_name}"
         else:
             self.header_bar.props.title = "LinuxToys"
-        
+
         # Refresh the dropdown menu with new translations
-        if hasattr(self, 'menu_button'):
+        if hasattr(self, "menu_button"):
             self.menu_button.refresh_menu_translations()
-        
+
         # Always reload categories with new translations (so they're ready when user navigates back)
         self.load_categories()
-        
+
         # If we're currently viewing categories, we're done since load_categories() already updated the view
         if self.main_stack.get_visible_child_name() == "categories":
             return
-            
+
         # If we're in a category/subcategory view, reload it with new translations
         if self.current_category_info:
             # Update navigation stack with fresh translations
             self._refresh_navigation_stack_translations()
-            
+
             # Get fresh category info with new translations
             updated_category_info = self._get_fresh_category_info_with_translations()
             if updated_category_info:
@@ -950,66 +1063,75 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                 # Update header with fresh category info
                 self._update_header(self.current_category_info)
                 # Update title bar with fresh category name
-                category_name = self.current_category_info.get('name', 'Unknown')
+                category_name = self.current_category_info.get("name", "Unknown")
                 self.header_bar.props.title = f"LinuxToys: {category_name}"
 
             # Reload the scripts view with new translations
             self.load_scripts(self.current_category_info)
 
         # Update footer if in checklist mode
-        if (self.current_category_info and 
-            self.current_category_info.get('display_mode', 'menu') == 'checklist'):
+        if (
+            self.current_category_info
+            and self.current_category_info.get("display_mode", "menu") == "checklist"
+        ):
             self.reveal.set_reveal_child(len(self.check_buttons) >= 2)
 
     def _get_fresh_category_info_with_translations(self):
         """Get fresh category info with updated translations"""
         if not self.current_category_info:
             return None
-            
-        current_path = self.current_category_info.get('path', '')
+
+        current_path = self.current_category_info.get("path", "")
         if not current_path:
             return None
-        
+
         from . import parser
-        
+
         # Check if this is the Local Scripts directory
-        if '.local/linuxtoys/scripts' in current_path:
+        if ".local/linuxtoys/scripts" in current_path:
             # Recreate Local Scripts category info with new translations
-            local_scripts_name = self.translations.get('local_scripts_name', 'Local Scripts')
-            local_scripts_desc = self.translations.get('local_scripts_desc', 'Drop your scripts here')
-            
+            local_scripts_name = self.translations.get(
+                "local_scripts_name", "Local Scripts"
+            )
+            local_scripts_desc = self.translations.get(
+                "local_scripts_desc", "Drop your scripts here"
+            )
+
             return {
-                'name': local_scripts_name,
-                'description': local_scripts_desc,
-                'icon': 'local-script.svg',
-                'mode': 'auto',
-                'path': current_path,
-                'is_script': False,
-                'is_subcategory': True,
-                'has_subcategories': False,
-                'display_mode': 'menu'
+                "name": local_scripts_name,
+                "description": local_scripts_desc,
+                "icon": "local-script.svg",
+                "mode": "auto",
+                "path": current_path,
+                "is_script": False,
+                "is_subcategory": True,
+                "has_subcategories": False,
+                "display_mode": "menu",
             }
-        
+
         # Check if this is a main category
         if current_path.startswith(parser.SCRIPTS_DIR):
             # Get all categories with new translations
             categories = parser.get_categories(self.translations)
-            
+
             # Find matching category by path
             for category in categories:
-                if category.get('path') == current_path:
+                if category.get("path") == current_path:
                     return category
-            
+
             # If not found in main categories, check subcategories
             # Get the parent directory to find subcategories
             import os
+
             parent_path = os.path.dirname(current_path)
             if parent_path and parent_path != current_path:
-                subcategories = parser.get_subcategories_for_category(parent_path, self.translations)
+                subcategories = parser.get_subcategories_for_category(
+                    parent_path, self.translations
+                )
                 for subcategory in subcategories:
-                    if subcategory.get('path') == current_path:
+                    if subcategory.get("path") == current_path:
                         return subcategory
-        
+
         # If no match found, return the current info (fallback)
         return self.current_category_info
 
@@ -1017,52 +1139,59 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         """Refresh all category info in the navigation stack with new translations"""
         if not self.navigation_stack:
             return
-            
+
         # Update each category in the navigation stack with fresh translations
         for i, category_info in enumerate(self.navigation_stack):
-            current_path = category_info.get('path', '')
+            current_path = category_info.get("path", "")
             if not current_path:
                 continue
-                
+
             from . import parser
-            
+
             # Check if this is the Local Scripts directory
-            if '.local/linuxtoys/scripts' in current_path:
+            if ".local/linuxtoys/scripts" in current_path:
                 # Update Local Scripts category info with new translations
-                local_scripts_name = self.translations.get('local_scripts_name', 'Local Scripts')
-                local_scripts_desc = self.translations.get('local_scripts_desc', 'Drop your scripts here')
-                
+                local_scripts_name = self.translations.get(
+                    "local_scripts_name", "Local Scripts"
+                )
+                local_scripts_desc = self.translations.get(
+                    "local_scripts_desc", "Drop your scripts here"
+                )
+
                 self.navigation_stack[i] = {
-                    'name': local_scripts_name,
-                    'description': local_scripts_desc,
-                    'icon': 'local-script.svg',
-                    'mode': 'auto',
-                    'path': current_path,
-                    'is_script': False,
-                    'is_subcategory': True,
-                    'has_subcategories': False,
-                    'display_mode': 'menu'
+                    "name": local_scripts_name,
+                    "description": local_scripts_desc,
+                    "icon": "local-script.svg",
+                    "mode": "auto",
+                    "path": current_path,
+                    "is_script": False,
+                    "is_subcategory": True,
+                    "has_subcategories": False,
+                    "display_mode": "menu",
                 }
                 continue
-            
+
             # Check if this is a main category
             if current_path.startswith(parser.SCRIPTS_DIR):
                 # Get all categories with new translations
                 categories = parser.get_categories(self.translations)
-                
+
                 # Find matching category by path
                 for category in categories:
-                    if category.get('path') == current_path:
+                    if category.get("path") == current_path:
                         self.navigation_stack[i] = category
                         break
                 else:
                     # If not found in main categories, check subcategories
                     import os
+
                     parent_path = os.path.dirname(current_path)
                     if parent_path and parent_path != current_path:
-                        subcategories = parser.get_subcategories_for_category(parent_path, self.translations)
+                        subcategories = parser.get_subcategories_for_category(
+                            parent_path, self.translations
+                        )
                         for subcategory in subcategories:
-                            if subcategory.get('path') == current_path:
+                            if subcategory.get("path") == current_path:
                                 self.navigation_stack[i] = subcategory
                                 break
 
@@ -1071,12 +1200,12 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         # Remove the old header
         main_vbox = self.get_child()
         main_vbox.remove(self.header_widget)
-        
+
         # Create new header with category info
         self.header_widget = header.create_header(self.translations, category_info)
         main_vbox.pack_start(self.header_widget, False, False, 8)
         main_vbox.reorder_child(self.header_widget, 0)  # Move to top
-        
+
         # Show the new header
         self.header_widget.show_all()
 
@@ -1085,12 +1214,12 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         try:
             # Hover effect
             widget.get_style_context().add_class("script-item-hover")
-            
+
             # Force a redraw
             widget.queue_draw()
         except Exception as e:
             print(f"Error in hover enter: {e}")
-        
+
         return False
 
     def on_item_leave(self, widget, event):
@@ -1098,12 +1227,12 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         try:
             style_context = widget.get_style_context()
             style_context.remove_class("script-item-hover")
-            
+
             # Force a redraw
             widget.queue_draw()
         except Exception as e:
             print(f"Error in hover leave: {e}")
-        
+
         return False
 
     def on_item_button_press(self, widget, event):
@@ -1112,7 +1241,10 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
             # Determine the appropriate click handler based on item type and context
             info = widget.info
 
-            if ".local/linuxtoys/scripts/" in info.get('path') and event.state & Gdk.ModifierType.CONTROL_MASK:
+            if (
+                ".local/linuxtoys/scripts/" in info.get("path")
+                and event.state & Gdk.ModifierType.CONTROL_MASK
+            ):
                 if event.type == Gdk.EventType.DOUBLE_BUTTON_PRESS:
                     self._edit_local_script(widget.info)
                 return False
@@ -1120,29 +1252,29 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
             if self.search_active:
                 self.on_script_clicked(widget, event)
                 return True
-            
+
             # If this is a subcategory or category, use category click handler
-            if info.get('is_subcategory', False) or (not info.get('is_script', False)):
+            if info.get("is_subcategory", False) or (not info.get("is_script", False)):
                 self.on_category_clicked(widget, event)
             else:
                 # This is a script, use script click handler
                 self.on_script_clicked(widget, event)
             return True
-            
+
         elif event.button == 3:  # Right click
             self._show_context_menu(widget, event)
             return True
-            
+
         return False
 
     def _show_context_menu(self, widget, event):
         """Show context menu for right-click on items."""
         info = widget.info
-        
+
         # Only show context menu for local scripts
         if not self._is_local_script(info):
             return
-        
+
         # Get all selected local scripts
         selected_children = self.scripts_flowbox.get_selected_children()
         selected_infos = []
@@ -1151,69 +1283,83 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
             item_info = event_box.info
             if self._is_local_script(item_info):
                 selected_infos.append(item_info)
-        
+
         # If multiple selected, show limited menu
         if len(selected_infos) > 1:
             menu = Gtk.Menu()
-            
+
             # Export option
             export_item = Gtk.MenuItem(label=self.translations.get("export", "Export"))
-            export_item.connect("activate", lambda item: self._export_local_scripts(selected_infos))
+            export_item.connect(
+                "activate", lambda item: self._export_local_scripts(selected_infos)
+            )
             menu.append(export_item)
-            
+
             # Delete option
-            delete_item = Gtk.MenuItem(label=self.translations.get("delete_script", "Delete Script"))
-            delete_item.connect("activate", lambda item: self._delete_local_scripts(selected_infos))
+            delete_item = Gtk.MenuItem(
+                label=self.translations.get("delete_script", "Delete Script")
+            )
+            delete_item.connect(
+                "activate", lambda item: self._delete_local_scripts(selected_infos)
+            )
             menu.append(delete_item)
-            
+
             menu.show_all()
             menu.popup_at_pointer(event)
         else:
             # Single selection menu
             menu = Gtk.Menu()
-            
+
             # Export option
             export_item = Gtk.MenuItem(label=self.translations.get("export", "Export"))
-            export_item.connect("activate", lambda item: self._export_local_script(info))
+            export_item.connect(
+                "activate", lambda item: self._export_local_script(info)
+            )
             menu.append(export_item)
-            
+
             # Edit option
-            edit_item = Gtk.MenuItem(label=self.translations.get("edit_script", "Edit Script"))
+            edit_item = Gtk.MenuItem(
+                label=self.translations.get("edit_script", "Edit Script")
+            )
             edit_item.connect("activate", lambda item: self._edit_local_script(info))
             menu.append(edit_item)
-            
+
             # Delete option
-            delete_item = Gtk.MenuItem(label=self.translations.get("delete_script", "Delete Script"))
-            delete_item.connect("activate", lambda item: self._delete_local_script(info))
+            delete_item = Gtk.MenuItem(
+                label=self.translations.get("delete_script", "Delete Script")
+            )
+            delete_item.connect(
+                "activate", lambda item: self._delete_local_script(info)
+            )
             menu.append(delete_item)
-            
+
             menu.show_all()
             menu.popup_at_pointer(event)
 
     def _is_local_script(self, script_info):
         """Check if a script is a local script that can be deleted."""
-        if not script_info or not script_info.get('is_script', False):
+        if not script_info or not script_info.get("is_script", False):
             return False
-        
+
         # Check if we're currently in the Local Scripts category
         if not self._is_local_scripts_category(self.current_category_info):
             return False
-        
+
         # Check if the script path is within the local scripts directory
-        script_path = script_info.get('path', '')
-        if not hasattr(self, 'local_sh_dir'):
+        script_path = script_info.get("path", "")
+        if not hasattr(self, "local_sh_dir"):
             return False
-        
+
         return script_path.startswith(self.local_sh_dir)
 
     def _delete_local_script(self, script_info):
         """Delete a local script after confirmation."""
-        script_name = script_info.get('name', 'Unknown Script')
-        script_path = script_info.get('path', '')
-        
+        script_name = script_info.get("name", "Unknown Script")
+        script_path = script_info.get("path", "")
+
         if not script_path or not os.path.exists(script_path):
             return
-        
+
         # Show confirmation dialog without any icon or title
         dialog = Gtk.MessageDialog(
             transient_for=self,
@@ -1221,44 +1367,45 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
             message_type=Gtk.MessageType.OTHER,  # Use OTHER to avoid default icons
             buttons=Gtk.ButtonsType.NONE,  # Use NONE to add custom buttons
             text=self.translations.get(
-                "delete_script_message", 
-                "Are you sure you want to delete '{script_name}'?"
-            ).format(script_name=script_name)
+                "delete_script_message",
+                "Are you sure you want to delete '{script_name}'?",
+            ).format(script_name=script_name),
         )
-        
+
         # Add custom buttons with translations
         dialog.add_button(self.translations.get("no", "No"), Gtk.ResponseType.NO)
         dialog.add_button(self.translations.get("yes", "Yes"), Gtk.ResponseType.YES)
-        
+
         # Create an empty image to hide the icon area
         empty_image = Gtk.Image()
         dialog.set_image(empty_image)
-        
+
         # Add 20px padding to the top of the dialog
         message_area = dialog.get_message_area()
         message_area.set_margin_top(20)
-        
+
         # Set secondary text with bold "This action cannot be undone"
         dialog.format_secondary_text(
             self.translations.get(
-                "delete_script_warning", 
-                "<b>This action cannot be undone.</b>"
+                "delete_script_warning", "<b>This action cannot be undone.</b>"
             )
         )
-        
+
         # Enable markup for the secondary text to display bold formatting
-        secondary_label = dialog.get_message_area().get_children()[1]  # Second label is secondary text
+        secondary_label = dialog.get_message_area().get_children()[
+            1
+        ]  # Second label is secondary text
         secondary_label.set_use_markup(True)
-        
+
         response = dialog.run()
         dialog.destroy()
-        
+
         if response == Gtk.ResponseType.YES:
             try:
                 os.remove(script_path)
                 self.script_cache.scripts[:] = filter(
-                    lambda s: s.get("path") != script_path,
-                    self.script_cache.scripts)
+                    lambda s: s.get("path") != script_path, self.script_cache.scripts
+                )
                 # Refresh the current view to remove the deleted script
                 self._refresh_current_local_scripts_view()
             except Exception as e:
@@ -1268,12 +1415,11 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                     flags=0,
                     message_type=Gtk.MessageType.ERROR,
                     buttons=Gtk.ButtonsType.OK,
-                    text=self.translations.get("delete_error_title", "Delete Error")
+                    text=self.translations.get("delete_error_title", "Delete Error"),
                 )
                 error_dialog.format_secondary_text(
                     self.translations.get(
-                        "delete_error_message",
-                        "Failed to delete script: {error}"
+                        "delete_error_message", "Failed to delete script: {error}"
                     ).format(error=str(e))
                 )
                 error_dialog.run()
@@ -1283,12 +1429,12 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         """Delete multiple local scripts after confirmation."""
         if not script_infos:
             return
-        
-        script_names = [info.get('name', 'Unknown Script') for info in script_infos]
+
+        script_names = [info.get("name", "Unknown Script") for info in script_infos]
         names_text = ", ".join(script_names[:3])  # Show first 3 names
         if len(script_names) > 3:
             names_text += f" ... (+{len(script_names) - 3} more)"
-        
+
         # Show confirmation dialog
         dialog = Gtk.MessageDialog(
             transient_for=self,
@@ -1296,60 +1442,61 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
             message_type=Gtk.MessageType.OTHER,
             buttons=Gtk.ButtonsType.NONE,
             text=self.translations.get(
-                "delete_scripts_message", 
-                "Are you sure you want to delete {count} scripts?"
-            ).format(count=len(script_infos))
+                "delete_scripts_message",
+                "Are you sure you want to delete {count} scripts?",
+            ).format(count=len(script_infos)),
         )
-        
+
         # Add custom buttons
         dialog.add_button(self.translations.get("no", "No"), Gtk.ResponseType.NO)
         dialog.add_button(self.translations.get("yes", "Yes"), Gtk.ResponseType.YES)
-        
+
         # Create an empty image to hide the icon area
         empty_image = Gtk.Image()
         dialog.set_image(empty_image)
-        
+
         # Add padding
         message_area = dialog.get_message_area()
         message_area.set_margin_top(20)
-        
+
         # Set secondary text
         dialog.format_secondary_text(
             self.translations.get(
-                "delete_script_warning", 
-                "<b>This action cannot be undone.</b>\n\nScripts: {names}"
+                "delete_script_warning",
+                "<b>This action cannot be undone.</b>\n\nScripts: {names}",
             ).format(names=names_text)
         )
-        
+
         # Enable markup
         secondary_label = dialog.get_message_area().get_children()[1]
         secondary_label.set_use_markup(True)
-        
+
         response = dialog.run()
         dialog.destroy()
-        
+
         if response == Gtk.ResponseType.YES:
             deleted_count = 0
             for script_info in script_infos:
-                script_path = script_info.get('path', '')
+                script_path = script_info.get("path", "")
                 if script_path and os.path.exists(script_path):
                     try:
                         os.remove(script_path)
                         self.script_cache.scripts[:] = filter(
                             lambda s: s.get("path") != script_path,
-                            self.script_cache.scripts)
+                            self.script_cache.scripts,
+                        )
                         deleted_count += 1
                     except Exception as e:
                         print(f"Failed to delete {script_path}: {e}")
-            
+
             # Refresh the view
             if deleted_count > 0:
                 self._refresh_current_local_scripts_view()
 
     def _edit_local_script(self, script_info):
         """Open a local script in the user's default text editor."""
-        script_path = script_info.get('path', '')
-        
+        script_path = script_info.get("path", "")
+
         if not script_path or not os.path.exists(script_path):
             # Show error dialog if script doesn't exist
             error_dialog = Gtk.MessageDialog(
@@ -1357,18 +1504,17 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                 flags=0,
                 message_type=Gtk.MessageType.ERROR,
                 buttons=Gtk.ButtonsType.OK,
-                text=self.translations.get("edit_error_title", "Edit Error")
+                text=self.translations.get("edit_error_title", "Edit Error"),
             )
             error_dialog.format_secondary_text(
                 self.translations.get(
-                    "edit_error_message",
-                    "The script file could not be found."
+                    "edit_error_message", "The script file could not be found."
                 )
             )
             error_dialog.run()
             error_dialog.destroy()
             return
-        
+
         try:
             # Use xdg-open to open the script in the default text editor
             os.system(f'xdg-open "{script_path}"')
@@ -1379,12 +1525,11 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                 flags=0,
                 message_type=Gtk.MessageType.ERROR,
                 buttons=Gtk.ButtonsType.OK,
-                text=self.translations.get("edit_error_title", "Edit Error")
+                text=self.translations.get("edit_error_title", "Edit Error"),
             )
             error_dialog.format_secondary_text(
                 self.translations.get(
-                    "edit_error_message",
-                    "Failed to open script: {error}"
+                    "edit_error_message", "Failed to open script: {error}"
                 ).format(error=str(e))
             )
             error_dialog.run()
@@ -1392,39 +1537,46 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
 
     def _export_local_script(self, script_info):
         """Export a local script to a user-chosen directory."""
-        script_name = script_info.get('name', 'Unknown Script')
-        script_path = script_info.get('path', '')
-        
+        script_name = script_info.get("name", "Unknown Script")
+        script_path = script_info.get("path", "")
+
         if not script_path or not os.path.exists(script_path):
             return
-        
+
         # Create file chooser dialog
         dialog = Gtk.FileChooserDialog(
-            title=self.translations.get("select_export_directory", "Select Export Directory"),
+            title=self.translations.get(
+                "select_export_directory", "Select Export Directory"
+            ),
             parent=self,
-            action=Gtk.FileChooserAction.SELECT_FOLDER
+            action=Gtk.FileChooserAction.SELECT_FOLDER,
         )
-        
+
         # Add buttons
-        dialog.add_button(self.translations.get("cancel_btn_label", "Cancel"), Gtk.ResponseType.CANCEL)
-        dialog.add_button(self.translations.get("export", "Export"), Gtk.ResponseType.OK)
-        
+        dialog.add_button(
+            self.translations.get("cancel_btn_label", "Cancel"), Gtk.ResponseType.CANCEL
+        )
+        dialog.add_button(
+            self.translations.get("export", "Export"), Gtk.ResponseType.OK
+        )
+
         # Set default directory to user's home
         dialog.set_current_folder(os.path.expanduser("~"))
-        
+
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             export_dir = dialog.get_filename()
             dialog.destroy()
-            
+
             # Copy the script to the selected directory
             filename = os.path.basename(script_path)
             dest_path = os.path.join(export_dir, filename)
-            
+
             try:
                 import shutil
+
                 shutil.copy2(script_path, dest_path)
-                
+
             except Exception as e:
                 # Show error dialog
                 error_dialog = Gtk.MessageDialog(
@@ -1432,12 +1584,11 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                     flags=0,
                     message_type=Gtk.MessageType.ERROR,
                     buttons=Gtk.ButtonsType.OK,
-                    text=self.translations.get("export_error_title", "Export Error")
+                    text=self.translations.get("export_error_title", "Export Error"),
                 )
                 error_dialog.format_secondary_text(
                     self.translations.get(
-                        "export_error_message",
-                        "Failed to export script: {error}"
+                        "export_error_message", "Failed to export script: {error}"
                     ).format(error=str(e))
                 )
                 error_dialog.run()
@@ -1449,30 +1600,36 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         """Export multiple local scripts to a user-chosen directory."""
         if not script_infos:
             return
-        
+
         # Create file chooser dialog
         dialog = Gtk.FileChooserDialog(
-            title=self.translations.get("select_export_directory", "Select Export Directory"),
+            title=self.translations.get(
+                "select_export_directory", "Select Export Directory"
+            ),
             parent=self,
-            action=Gtk.FileChooserAction.SELECT_FOLDER
+            action=Gtk.FileChooserAction.SELECT_FOLDER,
         )
-        
+
         # Add buttons
-        dialog.add_button(self.translations.get("cancel_btn_label", "Cancel"), Gtk.ResponseType.CANCEL)
-        dialog.add_button(self.translations.get("export", "Export"), Gtk.ResponseType.OK)
-        
+        dialog.add_button(
+            self.translations.get("cancel_btn_label", "Cancel"), Gtk.ResponseType.CANCEL
+        )
+        dialog.add_button(
+            self.translations.get("export", "Export"), Gtk.ResponseType.OK
+        )
+
         # Set default directory to user's home
         dialog.set_current_folder(os.path.expanduser("~"))
-        
+
         response = dialog.run()
         if response == Gtk.ResponseType.OK:
             export_dir = dialog.get_filename()
             dialog.destroy()
-            
+
             # Copy all scripts to the selected directory
             success_count = 0
             for script_info in script_infos:
-                script_path = script_info.get('path', '')
+                script_path = script_info.get("path", "")
                 if script_path and os.path.exists(script_path):
                     filename = os.path.basename(script_path)
                     dest_path = os.path.join(export_dir, filename)
@@ -1481,7 +1638,7 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                         success_count += 1
                     except Exception as e:
                         print(f"Failed to export {filename}: {e}")
-            
+
             # Show success message
             if success_count > 0:
                 success_dialog = Gtk.MessageDialog(
@@ -1489,7 +1646,7 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                     flags=0,
                     message_type=Gtk.MessageType.INFO,
                     buttons=Gtk.ButtonsType.OK,
-                    text=self.translations.get("export_success", "Export Successful")
+                    text=self.translations.get("export_success", "Export Successful"),
                 )
                 # Create an empty image to hide the icon area
                 empty_image = Gtk.Image()
@@ -1497,21 +1654,21 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                 success_dialog.format_secondary_text(
                     self.translations.get(
                         "export_success_message",
-                        "{count} scripts exported successfully."
+                        "{count} scripts exported successfully.",
                     ).format(count=success_count)
                 )
                 message_area = success_dialog.get_message_area()
                 message_area.set_margin_top(20)
                 success_dialog.run()
                 success_dialog.destroy()
-            
+
         else:
             dialog.destroy()
 
     def _on_search_changed(self, search_entry):
         """Handle search text changes."""
         query = search_entry.get_text().strip()
-        
+
         if len(query) >= 2:
             self._perform_search(query)
         elif len(query) == 0 and self.search_active:
@@ -1519,6 +1676,7 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
             self._clear_search_results()
             # Deselect the search entry (remove focus) using GLib.idle_add for deferred execution
             from gi.repository import GLib
+
             def remove_focus():
                 # Try to focus on the current visible child or the main container
                 current_child = self.main_stack.get_visible_child()
@@ -1528,11 +1686,12 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                     # Fallback: try to focus on the main window itself
                     self.grab_focus()
                 return False  # Don't repeat this idle callback
+
             GLib.idle_add(remove_focus)
             # Also reset the header if we were in search mode
             if self.current_category_info:
                 self._update_header(self.current_category_info)
-                category_name = self.current_category_info.get('name', 'Unknown')
+                category_name = self.current_category_info.get("name", "Unknown")
                 self.header_bar.props.title = f"LinuxToys: {category_name}"
             else:
                 self._update_header()  # Reset to default header
@@ -1552,6 +1711,7 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
             widget.set_text("")
             # Deselect the search entry (remove focus) using GLib.idle_add for deferred execution
             from gi.repository import GLib
+
             def remove_focus():
                 # Try to focus on the current visible child or the main container
                 current_child = self.main_stack.get_visible_child()
@@ -1561,13 +1721,14 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                     # Fallback: try to focus on the main window itself
                     self.grab_focus()
                 return False  # Don't repeat this idle callback
+
             GLib.idle_add(remove_focus)
             if self.search_active:
                 self._clear_search_results()
                 # Reset header appropriately
                 if self.current_category_info:
                     self._update_header(self.current_category_info)
-                    category_name = self.current_category_info.get('name', 'Unknown')
+                    category_name = self.current_category_info.get("name", "Unknown")
                     self.header_bar.props.title = f"LinuxToys: {category_name}"
                 else:
                     self._update_header()  # Reset to default header
@@ -1583,36 +1744,36 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
     def _display_search_results(self):
         """Display search results in the search view."""
         self.search_active = True
-        
+
         # Clear existing search results completely
         for child in self.search_flowbox.get_children():
             self.search_flowbox.remove(child)
-        
+
         # Force switch to search view first to ensure we're in the right context
         self.main_stack.set_visible_child_name("search")
-        
+
         # Ensure the back button is visible when in search mode
         self.back_button.show()
-        
+
         self.reveal.set_reveal_child(False)
 
         # Disable drag-and-drop in search mode
         self._disable_drag_and_drop()
-        
+
         # Add search results (all are scripts now)
         for search_result in self.search_results:
             item_info = search_result.item_info
             widget = self.create_item_widget(item_info)
-            description = item_info.get('description', '')
+            description = item_info.get("description", "")
             if description:
                 widget.set_tooltip_text(description)
             else:
                 widget.set_tooltip_text(None)
             self.search_flowbox.add(widget)
-        
+
         # Ensure all widgets are shown
         self.search_flowbox.show_all()
-        
+
         # Update header for search view
         self._update_search_header()
 
@@ -1620,17 +1781,17 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         """Activate a specific search result (simulate click)."""
         # This would be called when Enter is pressed or result is directly activated
         item_info = search_result.item_info
-        
+
         # Check if this is the "Create New Script" option
-        if item_info.get('is_create_script'):
+        if item_info.get("is_create_script"):
             self._handle_create_new_script()
             return
-        
+
         # Handle regular scripts
         if self.reboot_required:
             self._show_reboot_warning_dialog()
             return
-        
+
         # Use VTE-based term_view for execution
         self.open_term_view([item_info])
 
@@ -1638,16 +1799,16 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         """Clear search results and return to previous view."""
         self.search_active = False
         self.search_results = []
-        
+
         # Return to appropriate view
         if self.current_category_info:
             self.main_stack.set_visible_child(self.scripts_view)
             # Ensure back button is visible for category views
             self.back_button.show()
 
-            if self.current_category_info.get('display_mode', 'menu') == 'checklist':
+            if self.current_category_info.get("display_mode", "menu") == "checklist":
                 self.reveal.set_reveal_child(len(self.check_buttons) >= 2)
-            
+
             # Restore drag-and-drop state based on current category
             if self._is_local_scripts_category(self.current_category_info):
                 self._enable_drag_and_drop()
@@ -1668,16 +1829,18 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         """Update header for search results view."""
         search_query = self.search_entry.get_text().strip()
         results_count = len(self.search_results)
-        
+
         # Create search results info for header
         search_info = {
-            'name': f"{self.translations.get('search_results', 'Search Results')}: \"{search_query}\"",
-            'description': f"{results_count} {self.translations.get('results_found', 'results found')}",
-            'icon': 'system-search-symbolic'
+            "name": f'{self.translations.get("search_results", "Search Results")}: "{search_query}"',
+            "description": f"{results_count} {self.translations.get('results_found', 'results found')}",
+            "icon": "system-search-symbolic",
         }
-        
+
         self._update_header(search_info)
-        self.header_bar.props.title = f"LinuxToys: {self.translations.get('search', 'Search')}"
+        self.header_bar.props.title = (
+            f"LinuxToys: {self.translations.get('search', 'Search')}"
+        )
         self.back_button.show()
 
     def on_back_button_clicked(self, widget):
@@ -1696,57 +1859,59 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                 return  # User cancelled the operation
 
         self.check_buttons.clear()
-            
+
         if self.navigation_stack:
             # Store current view for cleanup
             current_view = self.scripts_view
-            
+
             # Go back to the previous category/subcategory
             previous_category = self.navigation_stack.pop()
             self.current_category_info = previous_category
-            
+
             # Create a new view for the previous category
             self.view_counter += 1
             new_view_name = f"scripts_{self.view_counter}"
-            
+
             new_flowbox = self.create_flowbox()
             new_scrolled_view = Gtk.ScrolledWindow()
             new_scrolled_view.add(new_flowbox)
-            
+
             # Load content into the new view
             self._load_scripts_into_flowbox(new_flowbox, previous_category)
-            
+
             # Add the new view to the stack
             self.main_stack.add_named(new_scrolled_view, new_view_name)
             new_scrolled_view.show_all()
-            
+
             # Set transition direction for going back
-            self.main_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
-            
+            self.main_stack.set_transition_type(
+                Gtk.StackTransitionType.SLIDE_LEFT_RIGHT
+            )
+
             # Update references
             self.scripts_flowbox = new_flowbox
             self.scripts_view = new_scrolled_view
-            
+
             # Switch to the new view
             self.main_stack.set_visible_child(new_scrolled_view)
-            
+
             # Update UI
-            category_name = previous_category.get('name', 'Unknown')
+            category_name = previous_category.get("name", "Unknown")
             self.header_bar.props.title = f"LinuxToys: {category_name}"
             self._update_header(previous_category)
-            
+
             # Update drag-and-drop state based on the category we're navigating to
             if self._is_local_scripts_category(previous_category):
                 self._enable_drag_and_drop()
             else:
                 self._disable_drag_and_drop()
-            
+
             # Show footer only if checklist mode
-            if previous_category.get('display_mode', 'menu') == 'checklist':
+            if previous_category.get("display_mode", "menu") == "checklist":
                 self.reveal.set_reveal_child(len(self.check_buttons) >= 2)
             else:
                 self.reveal.set_reveal_child(False)
-            
+
             # Clean up the old view after transition
             def cleanup_old_view():
                 try:
@@ -1754,29 +1919,35 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
                 except Exception:
                     pass  # View may already be removed
                 # Restore normal transition direction
-                self.main_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
+                self.main_stack.set_transition_type(
+                    Gtk.StackTransitionType.SLIDE_LEFT_RIGHT
+                )
                 return False
-            
+
             GLib.timeout_add(300, cleanup_old_view)
-            
+
         else:
             # No more items in stack, go to main categories view
             current_view = self.scripts_view
-            self.main_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
+            self.main_stack.set_transition_type(
+                Gtk.StackTransitionType.SLIDE_LEFT_RIGHT
+            )
             self.show_categories_view()
-            
+
             # Clean up the scripts view after transition
             def cleanup_scripts_view():
                 try:
                     self.main_stack.remove(current_view)
                 except Exception:
                     pass
-                # Restore normal transition direction  
-                self.main_stack.set_transition_type(Gtk.StackTransitionType.SLIDE_LEFT_RIGHT)
+                # Restore normal transition direction
+                self.main_stack.set_transition_type(
+                    Gtk.StackTransitionType.SLIDE_LEFT_RIGHT
+                )
                 return False
-            
+
             GLib.timeout_add(300, cleanup_scripts_view)
-        
+
     def show_categories_view(self):
         """Switches to the main categories view."""
         self.current_category_info = None
@@ -1788,7 +1959,7 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         self.reveal.set_reveal_child(True)
         self.reveal.button_box.hide()
         self.reveal.support.show_all()
-        
+
         # Disable drag-and-drop when viewing main categories
         self._disable_drag_and_drop()
 
@@ -1797,32 +1968,34 @@ source "$SCRIPT_DIR/libs/lang/${{langfile}}.lib"
         # If we have current category info, push it to navigation stack
         if self.current_category_info:
             self.navigation_stack.append(self.current_category_info)
-        
+
         self.current_category_info = category_info
-        
+
         # Switch to the current scripts view (which may be a new one created for subcategories)
         current_child = self.main_stack.get_visible_child()
         if current_child != self.scripts_view:
             self.main_stack.set_visible_child(self.scripts_view)
-        
+
         self.back_button.show()
-        
+
         # Get the category name for the title
-        category_name = category_info.get('name', 'Unknown') if category_info else 'Unknown'
+        category_name = (
+            category_info.get("name", "Unknown") if category_info else "Unknown"
+        )
         self.header_bar.props.title = f"LinuxToys: {category_name}"
-        
+
         # Update header with category information
         if category_info:
             self._update_header(category_info)
-        
+
         # Enable drag-and-drop only for Local Scripts category
         if self._is_local_scripts_category(category_info):
             self._enable_drag_and_drop()
         else:
             self._disable_drag_and_drop()
-        
+
         # Show footer only if checklist mode
-        if category_info and category_info.get('display_mode', 'menu') == 'checklist':
+        if category_info and category_info.get("display_mode", "menu") == "checklist":
             self.reveal.set_reveal_child(len(self.check_buttons) >= 2)
         else:
             self.reveal.set_reveal_child(False)
