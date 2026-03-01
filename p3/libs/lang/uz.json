@@ -343,5 +343,6 @@
   "stoat_desc": "Bepul va ochiq manbali chat mijozi, Discord-ga muqobil.",
   "needed_requirements_title": "Talablar",
   "needed_requirements_message": "{script_name} bilan davom etishdan oldin quyidagi xususiyatlar talab qilinadi:",
-  "needed_requirements_footer": "Bu kerakli xususiyatlar avval o'rnatiladi, so'ng asosiy skript davom etadi."
+  "needed_requirements_footer": "Bu kerakli xususiyatlar avval o'rnatiladi, so'ng asosiy skript davom etadi.",
+  "libvirt_desc": "virt-manager, libvirt va qemuни o'rnating va sozlang."
 }

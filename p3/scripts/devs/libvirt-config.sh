@@ -1,7 +1,7 @@
 #!/bin/bash
-# name: Virt Manager
+# name: Virt-Manager
 # version: 1.1
-# description: Install and configure libvirt and qemu.
+# description: libvirt_desc
 # icon: virt-manager.png
 # compat: ubuntu, debian, fedora, suse, arch, cachy, ostree, ublue
 # nocontainer

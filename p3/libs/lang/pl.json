@@ -344,5 +344,6 @@
   "stoat_desc": "Darmowy i otwartoźródłowy klient czatu, alternatywa dla Discorda.",
   "needed_requirements_title": "Wymagania",
   "needed_requirements_message": "Poniższe funkcje są wymagane przed kontynuacją {script_name}:",
-  "needed_requirements_footer": "Te wymagane funkcje będą zainstalowane najpierw, a następnie główny skrypt będzie kontynuować."
+  "needed_requirements_footer": "Te wymagane funkcje będą zainstalowane najpierw, a następnie główny skrypt będzie kontynuować.",
+  "libvirt_desc": "Zainstaluj i skonfiguruj virt-manager, libvirt i qemu."
 }

@@ -344,5 +344,6 @@
   "stoat_desc": "កម្មវិធីជជែកកំសាន្តឥតគិតថ្លៃ និងប្រភពកូដចំហ ដែលជាជម្រើសជំនួស Discord។",
   "needed_requirements_title": "តម្រូវការ",
   "needed_requirements_message": "មុខងារខាងក្រោមគឺត្រូវការ មុនពេលលេងបន្តទៅ {script_name}:",
-  "needed_requirements_footer": "មុខងារដែលចាំបាច់ទាំងនេះនឹងត្រូវបានដំឡើងដំបូង បន្ទាប់មក ស្គ្រីបបន្ថែមនឹងបន្ត។"
+  "needed_requirements_footer": "មុខងារដែលចាំបាច់ទាំងនេះនឹងត្រូវបានដំឡើងដំបូង បន្ទាប់មក ស្គ្រីបបន្ថែមនឹងបន្ត។",
+  "libvirt_desc": "ដំឡើង និងកំណត់ virt-manager, libvirt និង qemu។"
 }

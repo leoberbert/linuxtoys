@@ -324,5 +324,6 @@
   "stoat_desc": "मुफ़्त और ओपन-सोर्स चैट क्लाइंट, डिस्कॉर्ड का विकल्प।",
   "needed_requirements_title": "आवश्यकताएं",
   "needed_requirements_message": "{script_name} के साथ आगे बढ़ने से पहले निम्नलिखित विशेषताएं आवश्यक हैं:",
-  "needed_requirements_footer": "ये आवश्यक विशेषताएं पहले स्थापित की जाएंगी, फिर मुख्य स्क्रिप्ट जारी रहेगी।"
+  "needed_requirements_footer": "ये आवश्यक विशेषताएं पहले स्थापित की जाएंगी, फिर मुख्य स्क्रिप्ट जारी रहेगी।",
+  "libvirt_desc": "virt-manager, libvirt और qemu को इंस्टॉल और कॉन्फ़िगर करें।"
 }

@@ -344,5 +344,6 @@
   "stoat_desc": "Besplatan i open-source klijent za chat, alternativa za Discord.",
   "needed_requirements_title": "Zahtjevi",
   "needed_requirements_message": "Sljedeće osobine su potrebne prije nego što nastavite s {script_name}:",
-  "needed_requirements_footer": "Ove obavezne osobine će biti instalirane prvo, a zatim će se glavni skript nastaviti."
+  "needed_requirements_footer": "Ove obavezne osobine će biti instalirane prvo, a zatim će se glavni skript nastaviti.",
+  "libvirt_desc": "Instalirajte i konfigurujte virt-manager, libvirt i qemu."
 }

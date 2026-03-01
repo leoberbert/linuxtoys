@@ -344,5 +344,6 @@
   "stoat_desc": "Ücretsiz ve açık kaynaklı sohbet istemcisi, Discord'a alternatif.",
   "needed_requirements_title": "Gereksinimler",
   "needed_requirements_message": "{script_name} ile devam etmeden önce aşağıdaki özellikler gereklidir:",
-  "needed_requirements_footer": "Bu gerekli özellikler önce yüklenecek, sonra ana betiği devam edecektir."
+  "needed_requirements_footer": "Bu gerekli özellikler önce yüklenecek, sonra ana betiği devam edecektir.",
+  "libvirt_desc": "virt-manager, libvirt ve qemu yükleyin ve yapılandırın."
 }

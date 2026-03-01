@@ -344,5 +344,6 @@
   "stoat_desc": "नि:शुल्क र खुला स्रोत च्याट क्लायन्ट, डिस्कॉर्डको विकल्प।",
   "needed_requirements_title": "आवश्यकताहरू",
   "needed_requirements_message": "{script_name} सँग अगाडि बढ्नु अघि निम्नलिखित सुविधाहरू आवश्यक छन्:",
-  "needed_requirements_footer": "यी आवश्यक सुविधाहरू पहिले स्थापन गरिनेछन्, त्यसपछि मुख्य स्क्रिप्ट जारी रहनेछ।"
+  "needed_requirements_footer": "यी आवश्यक सुविधाहरू पहिले स्थापन गरिनेछन्, त्यसपछि मुख्य स्क्रिप्ट जारी रहनेछ।",
+  "libvirt_desc": "virt-manager, libvirt र qemu स्थापना र कन्फिगर गर्नुहोस्।"
 }

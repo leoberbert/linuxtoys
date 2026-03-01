@@ -344,5 +344,6 @@
   "stoat_desc": "Nemokama ir atvirojo kodo pokalbių programa, „Discord“ alternatyva.",
   "needed_requirements_title": "Reikalavimai",
   "needed_requirements_message": "Toliau nurodytai funkcijos reikalingos prieš tęsiant {script_name}:",
-  "needed_requirements_footer": "Šios reikalingos funkcijos bus sumontuotos pirmiausia, tada tęsis pagrindinė skripta."
+  "needed_requirements_footer": "Šios reikalingos funkcijos bus sumontuotos pirmiausia, tada tęsis pagrindinė skripta.",
+  "libvirt_desc": "Įdiekite ir sukonfigūruokite virt-manager, libvirt ir qemu."
 }

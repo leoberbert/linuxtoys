@@ -344,5 +344,6 @@
   "stoat_desc": "Bezplatný a open-source četový klient, alternatíva k Discordu.",
   "needed_requirements_title": "Požiadavky",
   "needed_requirements_message": "Nasledujúce funkcie sú potrebné pred pokračovaním s {script_name}:",
-  "needed_requirements_footer": "Tieto potrebné funkcie budú nainštalované ako prvé, potom bude pokračovať hlavný skript."
+  "needed_requirements_footer": "Tieto potrebné funkcie budú nainštalované ako prvé, potom bude pokračovať hlavný skript.",
+  "libvirt_desc": "Nainštalujte a nakonfigurujte virt-manager, libvirt a qemu."
 }

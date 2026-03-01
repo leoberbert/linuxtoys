@@ -344,5 +344,6 @@
   "stoat_desc": "Client de chat gratuito e open-source, alternativa la Discord.",
   "needed_requirements_title": "Cerințe",
   "needed_requirements_message": "Următoarele funcții sunt necesare înainte de a continua cu {script_name}:",
-  "needed_requirements_footer": "Aceste funcții necesare vor fi instalate mai întâi, apoi scriptul principal va continua."
+  "needed_requirements_footer": "Aceste funcții necesare vor fi instalate mai întâi, apoi scriptul principal va continua.",
+  "libvirt_desc": "Instalați și configurați virt-manager, libvirt și qemu."
 }

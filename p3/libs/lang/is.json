@@ -344,5 +344,6 @@
   "stoat_desc": "Ókeypis og opinn spjallhugbúnaður, valkostur við Discord.",
   "needed_requirements_title": "Kröfur",
   "needed_requirements_message": "Eftirfarandi eiginleikar eru nauðsynlegir áður en haldið er áfram með {script_name}:",
-  "needed_requirements_footer": "Þessir nauðsynlegu eiginleikar verða settir upp fyrst, síðan mun aðalskriftið halda áfram."
+  "needed_requirements_footer": "Þessir nauðsynlegu eiginleikar verða settir upp fyrst, síðan mun aðalskriftið halda áfram.",
+  "libvirt_desc": "Settu upp og stilltu virt-manager, libvirt og qemu."
 }

@@ -344,5 +344,6 @@
   "stoat_desc": "عميل دردشة مجاني ومفتوح المصدر، بديل لـ Discord.",
   "needed_requirements_title": "المتطلبات",
   "needed_requirements_message": "المميزات التالية مطلوبة قبل المتابعة مع {script_name}:",
-  "needed_requirements_footer": "سيتم تثبيت هذه الميزات المطلوبة أولاً، ثم سيستمر البرنامج الرئيسي."
+  "needed_requirements_footer": "سيتم تثبيت هذه الميزات المطلوبة أولاً، ثم سيستمر البرنامج الرئيسي.",
+  "libvirt_desc": "تثبيت وتكوين virt-manager و libvirt و qemu."
 }

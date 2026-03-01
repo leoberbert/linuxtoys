@@ -344,5 +344,6 @@
   "stoat_desc": "Cliant comhrá saor in aisce agus foinse oscailte, rogha eile seachas Discord.",
   "needed_requirements_title": "Riachtanais",
   "needed_requirements_message": "Tá gá do na gné agus a leanas roimh bhraistint ar aghaidh le {script_name}:",
-  "needed_requirements_footer": "Suiteofar na gné riachtanacha seo ar dtús, ansin leanfaidh an príomhscript ar aghaidh."
+  "needed_requirements_footer": "Suiteofar na gné riachtanacha seo ar dtús, ansin leanfaidh an príomhscript ar aghaidh.",
+  "libvirt_desc": "Suiteáil agus cumraigh virt-manager, libvirt agus qemu."
 }

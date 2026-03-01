@@ -344,5 +344,6 @@
   "stoat_desc": "Klien sembang percuma dan sumber terbuka, alternatif kepada Discord.",
   "needed_requirements_title": "Keperluan",
   "needed_requirements_message": "Ciri-ciri berikut diperlukan sebelum melanjutkan dengan {script_name}:",
-  "needed_requirements_footer": "Fitur-fitur yang diperlukan ini akan dipasang terlebih dahulu, kemudian skrip utama akan dilanjutkan."
+  "needed_requirements_footer": "Fitur-fitur yang diperlukan ini akan dipasang terlebih dahulu, kemudian skrip utama akan dilanjutkan.",
+  "libvirt_desc": "Pasang dan konfigurasikan virt-manager, libvirt dan qemu."
 }

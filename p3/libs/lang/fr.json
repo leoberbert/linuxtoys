@@ -344,5 +344,6 @@
   "stoat_desc": "Client de chat gratuito e open-source, alternative à Discord.",
   "needed_requirements_title": "Prérequis",
   "needed_requirements_message": "Les fonctionnalités suivantes sont requises avant de continuer avec {script_name}:",
-  "needed_requirements_footer": "Ces fonctionnalités requises seront installées en premier, puis le script principal continuera."
+  "needed_requirements_footer": "Ces fonctionnalités requises seront installées en premier, puis le script principal continuera.",
+  "libvirt_desc": "Installez et configurez virt-manager, libvirt et qemu."
 }

@@ -344,5 +344,6 @@
   "stoat_desc": "Klient bisede falas me burim të hapur, alternativë ndaj Discord.",
   "needed_requirements_title": "Kërkesa",
   "needed_requirements_message": "Veçoritë e mëposhtme janë të nevojshme para se të vazhdohet me {script_name}:",
-  "needed_requirements_footer": "Këto veçori të nevojshme do të instalohen fillimisht, pastaj skripti kryesor do të vazhdojë."
+  "needed_requirements_footer": "Këto veçori të nevojshme do të instalohen fillimisht, pastaj skripti kryesor do të vazhdojë.",
+  "libvirt_desc": "Instaloni dhe konfigurojini virt-manager, libvirt dhe qemu."
 }

@@ -344,5 +344,6 @@
   "stoat_desc": "Gratis og open-source chat-klient, alternativ til Discord.",
   "needed_requirements_title": "Krav",
   "needed_requirements_message": "Følgende funktioner er påkrevede før fortsættelsen af {script_name}:",
-  "needed_requirements_footer": "Disse påkrevede funktioner vil blive installeret først, derefter vil hovedscriptet fortsætte."
+  "needed_requirements_footer": "Disse påkrevede funktioner vil blive installeret først, derefter vil hovedscriptet fortsætte.",
+  "libvirt_desc": "Installer og konfigurer virt-manager, libvirt og qemu."
 }

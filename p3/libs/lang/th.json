@@ -344,5 +344,6 @@
   "stoat_desc": "ไคลเอนต์แชทฟรีและโอเพนซอร์ส ทางเลือกแทน Discord",
   "needed_requirements_title": "ข้อกำหนด",
   "needed_requirements_message": "จำเป็นต้องมีฟีเจอร์ต่อไปนี้ก่อนที่จะดำเนินการต่อด้วย {script_name}:",
-  "needed_requirements_footer": "ฟีเจอร์ที่จำเป็นเหล่านี้จะถูกติดตั้งก่อน จากนั้นสคริปต์หลักจะดำเนินการต่อ"
+  "needed_requirements_footer": "ฟีเจอร์ที่จำเป็นเหล่านี้จะถูกติดตั้งก่อน จากนั้นสคริปต์หลักจะดำเนินการต่อ",
+  "libvirt_desc": "ติดตั้งและตั้งค่า virt-manager, libvirt และ qemu"
 }

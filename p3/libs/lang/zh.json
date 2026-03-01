@@ -346,5 +346,6 @@
   "stoat_desc": "免费开源的聊天客户端，Discord 的替代品。",
   "needed_requirements_title": "要求",
   "needed_requirements_message": "继续使用 {script_name} 之前需要以下功能:",
-  "needed_requirements_footer": "这些必需的功能将首先安装，然后主脚本将继续进行。"
+  "needed_requirements_footer": "这些必需的功能将首先安装，然后主脚本将继续进行。",
+  "libvirt_desc": "安装并配置 virt-manager、libvirt 和 qemu。"
 }

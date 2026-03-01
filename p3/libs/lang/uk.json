@@ -344,5 +344,6 @@
   "stoat_desc": "Безкоштовний чат-клієнт із відкритим вихідним кодом, альтернатива Discord.",
   "needed_requirements_title": "Вимоги",
   "needed_requirements_message": "Перед продовженням роботи з {script_name} необхідні такі функції:",
-  "needed_requirements_footer": "Ці необхідні функції будуть встановлені спочатку, потім основний скрипт продовжиться."
+  "needed_requirements_footer": "Ці необхідні функції будуть встановлені спочатку, потім основний скрипт продовжиться.",
+  "libvirt_desc": "Встановіть та налаштуйте virt-manager, libvirt та qemu."
 }

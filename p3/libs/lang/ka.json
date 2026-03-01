@@ -344,5 +344,6 @@
   "stoat_desc": "უფასო და ღია კოდის მქონე ჩეთ-კლიენტი, Discord-ის ალტერნატივა.",
   "needed_requirements_title": "მოთხოვნები",
   "needed_requirements_message": "შემდეგი ფუნქციები აუცილებელია {script_name}-ით გაგრძელებამდე:",
-  "needed_requirements_footer": "ეს საჭირო ფუნქციები ჯერ დაინსტალირდება, შემდეგ მთავარი სკრიპტი გაგრძელდება."
+  "needed_requirements_footer": "ეს საჭირო ფუნქციები ჯერ დაინსტალირდება, შემდეგ მთავარი სკრიპტი გაგრძელდება.",
+  "libvirt_desc": "დაიდეგე და გააკონფიგურე virt-manager, libvirt და qemu."
 }

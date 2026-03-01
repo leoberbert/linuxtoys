@@ -344,5 +344,6 @@
   "stoat_desc": "Gratis en open-source chatclient, alternatief voor Discord.",
   "needed_requirements_title": "Vereisten",
   "needed_requirements_message": "De volgende functies zijn vereist voordat u doorgaat met {script_name}:",
-  "needed_requirements_footer": "Deze vereiste functies worden eerst geïnstalleerd, waarna het hoofdscript wordt voortgezet."
+  "needed_requirements_footer": "Deze vereiste functies worden eerst geïnstalleerd, waarna het hoofdscript wordt voortgezet.",
+  "libvirt_desc": "Installeer en configureer virt-manager, libvirt en qemu."
 }

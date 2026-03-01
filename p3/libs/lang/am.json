@@ -344,5 +344,6 @@
   "stoat_desc": "ነጻ እና ክፍት ምንጭ የውይይት ደንበኛ፣ ለDiscord አማራጭ።",
   "needed_requirements_title": "መስፈርቶች",
   "needed_requirements_message": "ከ{script_name} ጋር ወደ ፊት ከመስፈር በፊት የሚከተሉት ባህሪዎች ያስፈልጋሉ:",
-  "needed_requirements_footer": "እነዚህ አስፈላጊ ባህሪዎች መጀመሪያ ይገጠሙታል፣ ከዚያ ዋናው ስክሪፕት ይቀጥላል።"
+  "needed_requirements_footer": "እነዚህ አስፈላጊ ባህሪዎች መጀመሪያ ይገጠሙታል፣ ከዚያ ዋናው ስክሪፕት ይቀጥላል።",
+  "libvirt_desc": "virt-manager፣ libvirt እና qemu ይጭኑ እና ይዋቅሩ።"
 }

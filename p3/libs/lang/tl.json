@@ -344,5 +344,6 @@
   "stoat_desc": "Libre at open-source na chat client, alternatibo sa Discord.",
   "needed_requirements_title": "Mga Kinakailangan",
   "needed_requirements_message": "Ang mga sumusunod na feature ay kinakailangan bago magpatuloy sa {script_name}:",
-  "needed_requirements_footer": "Ang mga kinakailangang feature na ito ay ilalagay muna, pagkatapos ang pangunahing script ay magpapatuloy."
+  "needed_requirements_footer": "Ang mga kinakailangang feature na ito ay ilalagay muna, pagkatapos ang pangunahing script ay magpapatuloy.",
+  "libvirt_desc": "Mag-install at i-configure ang virt-manager, libvirt at qemu."
 }

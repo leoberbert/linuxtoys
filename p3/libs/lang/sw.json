@@ -342,5 +342,6 @@
   "stoat_desc": "Kiteja cha mazungumzo cha bure na cha wazi, mbadala wa Discord.",
   "needed_requirements_title": "Mahitaji",
   "needed_requirements_message": "Sifa zifuatazo zinahitajika kabla ya kuendelea na {script_name}:",
-  "needed_requirements_footer": "Vipengele hivi vya mahitaji vitakamatia kwanza, kisha hati kuu itaendelea."
+  "needed_requirements_footer": "Vipengele hivi vya mahitaji vitakamatia kwanza, kisha hati kuu itaendelea.",
+  "libvirt_desc": "Sakinisha na kuandika virt-manager, libvirt na qemu."
 }

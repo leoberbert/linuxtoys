@@ -344,5 +344,6 @@
   "stoat_desc": "無料でオープンソースのチャットクライアント、Discordの代替品。",
   "needed_requirements_title": "要件",
   "needed_requirements_message": "{script_name} を続行する前に、次の機能が必要です:",
-  "needed_requirements_footer": "これらの必要な機能がまずインストールされ、その後、メインスクリプトが続行されます。"
+  "needed_requirements_footer": "これらの必要な機能がまずインストールされ、その後、メインスクリプトが続行されます。",
+  "libvirt_desc": "virt-manager、libvirt、qemuをインストールおよび構成します。"
 }

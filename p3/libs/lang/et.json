@@ -344,5 +344,6 @@
   "stoat_desc": "Tasuta ja avatud lähtekoodiga vestlusklient, alternatiiv Discordile.",
   "needed_requirements_title": "Nõuded",
   "needed_requirements_message": "Järgmised funktsioonid on nõutavad enne {script_name} jätkamist:",
-  "needed_requirements_footer": "Need nõutavad funktsioonid paigaldatakse esmalt, seejärel jätkub peamine skript."
+  "needed_requirements_footer": "Need nõutavad funktsioonid paigaldatakse esmalt, seejärel jätkub peamine skript.",
+  "libvirt_desc": "Paigaldage ja konfigureerige virt-manager, libvirt ja qemu."
 }

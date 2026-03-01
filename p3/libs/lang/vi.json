@@ -344,5 +344,6 @@
   "stoat_desc": "Trình mã nguồn mở và miễn phí, lựa chọn thay thế cho Discord.",
   "needed_requirements_title": "Yêu cầu",
   "needed_requirements_message": "Các tính năng sau đây cần thiết trước khi tiếp tục với {script_name}:",
-  "needed_requirements_footer": "Các tính năng cần thiết này sẽ được cài đặt trước, sau đó tập lệnh chính sẽ tiếp tục."
+  "needed_requirements_footer": "Các tính năng cần thiết này sẽ được cài đặt trước, sau đó tập lệnh chính sẽ tiếp tục.",
+  "libvirt_desc": "Cài đặt và cấu hình virt-manager, libvirt và qemu."
 }

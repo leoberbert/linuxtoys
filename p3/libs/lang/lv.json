@@ -344,5 +344,6 @@
   "stoat_desc": "Bezmaksas un atvērta pirmkoda tērzēšanas klients, alternatīva Discord.",
   "needed_requirements_title": "Prasības",
   "needed_requirements_message": "Šādas funkcijas ir nepieciešamas pirms turpināšanas ar {script_name}:",
-  "needed_requirements_footer": "Šīs nepieciešamās funkcijas tiks instalētas vispirms, tad turpināsies galvenais skripts."
+  "needed_requirements_footer": "Šīs nepieciešamās funkcijas tiks instalētas vispirms, tad turpināsies galvenais skripts.",
+  "libvirt_desc": "Instalējiet un konfigurējiet virt-manager, libvirt un qemu."
 }

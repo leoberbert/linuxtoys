@@ -344,5 +344,6 @@
   "stoat_desc": "תוכנת צ'אט חינמית ובកود פתוח, חלופה ל-Discord.",
   "needed_requirements_title": "דרישות",
   "needed_requirements_message": "התכונות הבאות נדרשות לפני שתמשיכו עם {script_name}:",
-  "needed_requirements_footer": "תכונות נדרשות אלה יותקנו תחילה, ואז הסקריפט הראשי יימשך."
+  "needed_requirements_footer": "תכונות נדרשות אלה יותקנו תחילה, ואז הסקריפט הראשי יימשך.",
+  "libvirt_desc": "התקן והגדר את virt-manager, libvirt ו-qemu."
 }

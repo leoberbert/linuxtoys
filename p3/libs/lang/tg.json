@@ -344,5 +344,6 @@
   "stoat_desc": "Клиенти чати ройгон ва кушодаасос, алтернатива ба Discord.",
   "needed_requirements_title": "Талаботҳо",
   "needed_requirements_message": "Хусусиятҳои зеринро пеш аз идома бо {script_name} талаб мекунанд:",
-  "needed_requirements_footer": "Ин хусусиятҳои талаботӣ аввал насб шудаанд, баъди он раёи асосӣ идома хоҳад ёфт."
+  "needed_requirements_footer": "Ин хусусиятҳои талаботӣ аввал насб шудаанд, баъди он раёи асосӣ идома хоҳад ёфт.",
+  "libvirt_desc": "virt-manager, libvirt ва qemuро насб ва танзим кунед."
 }

@@ -344,5 +344,6 @@
   "stoat_desc": "مفت اور اوپن سورس چیٹ کلائنٹ، ڈسکارڈ کا متبادل۔",
   "needed_requirements_title": "ضروریات",
   "needed_requirements_message": "{script_name} کے ساتھ آگے بڑھنے سے پہلے درج ذیل خصوصیات ضروری ہیں:",
-  "needed_requirements_footer": "یہ ضروری خصوصیات پہلے انسٹال کی جائیں گی، پھر اہم اسکرپٹ جاری رہے گی۔"
+  "needed_requirements_footer": "یہ ضروری خصوصیات پہلے انسٹال کی جائیں گی، پھر اہم اسکرپٹ جاری رہے گی۔",
+  "libvirt_desc": "virt-manager, libvirt اور qemu کو انسٹال اور کنفیگر کریں۔"
 }

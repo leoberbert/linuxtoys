@@ -344,5 +344,6 @@
   "stoat_desc": "Ingyenes és nyílt forráskódú csevegőalkalmazás, Discord alternatíva.",
   "needed_requirements_title": "Követelmények",
   "needed_requirements_message": "A következő funkciók szükségesek, mielőtt folytatna a {script_name} verzióval:",
-  "needed_requirements_footer": "Ezek a szükséges funkciók először telepítésre kerülnek, majd a fő szkript folytatódik."
+  "needed_requirements_footer": "Ezek a szükséges funkciók először telepítésre kerülnek, majd a fő szkript folytatódik.",
+  "libvirt_desc": "Telepítse és konfigurálja a virt-manager, libvirt és qemu alkalmazást."
 }

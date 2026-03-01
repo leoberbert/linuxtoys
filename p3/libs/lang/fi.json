@@ -344,5 +344,6 @@
   "stoat_desc": "Ilmainen ja avoimen lähdekoodin chat-asiakasohjelma, vaihtoehto Discordille.",
   "needed_requirements_title": "Vaatimukset",
   "needed_requirements_message": "Seuraavat ominaisuudet vaaditaan ennen kuin jatkat {script_name}:",
-  "needed_requirements_footer": "Nämä vaaditut ominaisuudet asennetaan ensin, minkä jälkeen pääskripti jatkuu."
+  "needed_requirements_footer": "Nämä vaaditut ominaisuudet asennetaan ensin, minkä jälkeen pääskripti jatkuu.",
+  "libvirt_desc": "Asenna ja määritä virt-manager, libvirt ja qemu."
 }

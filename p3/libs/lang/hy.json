@@ -344,5 +344,6 @@
   "stoat_desc": "Անվճար և բաց կոդով չաթի հաճախորդ, Discord-ի այլընտրանք:",
   "needed_requirements_title": "Պահանջներ",
   "needed_requirements_message": "Հետևյալ գործառույթները անհրաժեշտ են {script_name}-ի հետ շարունակելուց առաջ:",
-  "needed_requirements_footer": "Այս անհրաժեշտ գործառույթները կտեղադրվեն առաջին հերթին, ապա հիմնական սկրիպտը կշարունակվի:"
+  "needed_requirements_footer": "Այս անհրաժեշտ գործառույթները կտեղադրվեն առաջին հերթին, ապա հիմնական սկրիպտը կշարունակվի:",
+  "libvirt_desc": "Տեղադրեք և կազմավորեք virt-manager, libvirt և qemu:"
 }
